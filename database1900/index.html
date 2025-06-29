@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ランダムテスト作成ツール（内蔵データ版）</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
+    h1 { font-size: 24px; }
+    .question-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .answer { margin-top: 10px; font-weight: bold; color: green; }
+    button { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>問題範囲指定テスト作成</h1>
+
+  <label>出題する問題数：</label>
+  <input type="number" id="questionCount" min="1"><br><br>
+
+  <label>開始番号：</label>
+  <input type="number" id="startNumber" min="1"><br><br>
+
+  <label>終了番号：</label>
+  <input type="number" id="endNumber" min="1"><br><br>
+
+  <button onclick="generateTest()">作成</button>
+
+  <div id="questionsContainer"></div>
+
+  <script>
+    // ここに問題を追加・編集してください
+    const allQuestions = [
+      { number: 1, question: "地球は英語で何？", answer: "earth" },
+      { number: 2, question: "1+1は？", answer: "2" },
+      { number: 3, question: "富士山の高さはおおよそ何m？", answer: "3776" },
+    ];
+
+    function generateTest() {
+      const count = parseInt(document.getElementById('questionCount').value);
+      const start = parseInt(document.getElementById('startNumber').value);
+      const end = parseInt(document.getElementById('endNumber').value);
+
+      if (isNaN(count) || count < 1) {
+        alert("正しい問題数を入力してください。");
+        return;
+      }
+      if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
+        alert("正しい開始・終了番号を入力してください。");
+        return;
+      }
+
+      const filtered = allQuestions.filter(q => q.number >= start && q.number <= end);
+      if (filtered.length === 0) {
+        alert("指定範囲に問題がありません！");
+        return;
+      }
+      if (count > filtered.length) {
+        alert(`指定範囲には${filtered.length}問しかありません。`);
+        return;
+      }
+
+      const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, count);
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+
+      selected.forEach((q, idx) => {
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.innerHTML = `
+          <div><strong>Q${q.number}.</strong> ${q.question}</div>
+          <button onclick="this.nextElementSibling.style.display='block'; this.remove()">答えをチェック</button>
+          <div class="answer" style="display: none;">答え：${q.answer}</div>
+        `;
+        container.appendChild(box);
+      });
+    }
+  </script>
+
+</body>
+</html>
