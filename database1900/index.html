@@ -1987,7 +1987,15 @@
         `;
         container.appendChild(box);
       });
-    }
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(function(reg) {
+      console.log('ServiceWorker登録成功:', reg.scope);
+    })
+    .catch(function(err) {
+      console.log('ServiceWorker登録失敗:', err);
+    });
+}
   </script>
 
 </body>
