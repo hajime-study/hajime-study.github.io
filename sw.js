@@ -2,7 +2,7 @@ const CACHE_NAME = 'hajime-study-cache-v1';
 const urlsToCache = [
   '/',
   '/database1900/index.html',
-  '/IMG_1236.png',
+  '/IMG_1238.png',
   '/manifest.json'
 ];
 
