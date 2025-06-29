@@ -10,25 +10,28 @@
   <!-- アップル用ホーム画面アイコン -->
   <link rel="apple-touch-icon" href="/IMG_1211.png" sizes="180x180">
 
-  <!-- Android Chrome用マニフェスト -->
+  <!-- PWAマニフェスト -->
   <link rel="manifest" href="/manifest.json">
 
-  <!-- Safari Pinned Tabアイコン（必要に応じて色を変更してね） -->
+  <!-- Safariなどのテーマカラー -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
 
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
-    h1 { font-size: 24px; }
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 10px; }
+    h1 { font-size: 28px; text-align: center; }
     .question-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
     .answer { margin-top: 10px; font-weight: bold; color: green; }
     button { margin-top: 10px; }
+    label { font-weight: bold; }
   </style>
 </head>
 <body>
 
   <h1>ターゲット1900</h1>
+
+  <p>指定範囲の中からランダムで問題を出題します。</p>
 
   <label>出題する問題数：</label>
   <input type="number" id="questionCount" min="1"><br><br>
@@ -44,7 +47,7 @@
   <div id="questionsContainer"></div>
 
   <script>
-    // ここに問題を追加・編集してください
+    // お試し問題：必要に応じてここを編集してください
     const allQuestions = [
       { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
 { number: 2, question: "increase", answer: "増加する；を増やす"},
@@ -1945,7 +1948,7 @@
 { number: 1897, question: "weary", answer: "疲れ果てた；(～に)うんざりした(of)"},
 { number: 1898, question: "numb", answer: "麻痺した，無感覚な；ぼう然とした"},
 { number: 1899, question: "mortal", answer: "致命的な；死すべき(運命の)"},
-{ number: 1900, question: "zealous", answer: "熱心な；熱狂的な"},
+{ number: 1900, question: "zealous", answer: "熱心な；熱狂的な"}
     ];
 
     function generateTest() {
@@ -1977,7 +1980,7 @@
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
 
-      selected.forEach((q, idx) => {
+      selected.forEach((q) => {
         const box = document.createElement('div');
         box.className = 'question-box';
         box.innerHTML = `
@@ -1987,15 +1990,17 @@
         `;
         container.appendChild(box);
       });
+    }
+
     if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(function(reg) {
-      console.log('ServiceWorker登録成功:', reg.scope);
-    })
-    .catch(function(err) {
-      console.log('ServiceWorker登録失敗:', err);
-    });
-}
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(reg) {
+          console.log('ServiceWorker登録成功:', reg.scope);
+        })
+        .catch(function(err) {
+          console.log('ServiceWorker登録失敗:', err);
+        });
+    }
   </script>
 
 </body>
