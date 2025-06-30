@@ -5,49 +5,55 @@
   <title>ターゲット1900</title>
 
   <!-- ファビコン -->
-  <link rel="icon" href="/IMG_1238.png" type="image/png">
+  <link rel="icon" href="/database1900/database1900.png" type="image/png">
 
   <!-- アップル用ホーム画面アイコン -->
-  <link rel="apple-touch-icon" href="/IMG_1238.png" sizes="180x180">
+  <link rel="apple-touch-icon" href="/database1900/database1900.png" sizes="180x180">
 
   <!-- PWAマニフェスト -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="/database1900/manifest.json">
 
-  <!-- Safariなどのテーマカラー -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
 
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 10px; }
-    h1 { font-size: 28px; text-align: center; }
-    .question-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
-    .answer { margin-top: 10px; font-weight: bold; color: green; }
-    button { margin-top: 10px; }
-    label { font-weight: bold; }
-  </style>
+  <link rel="stylesheet" href="/database1900/style.css">
 </head>
 <body>
+  <div class="container">
+    <h1>ターゲット1900</h1>
+    <p>指定範囲の中からランダムに問題を出題します。</p>
 
-  <h1>ターゲット1900</h1>
+    <div class="form-group">
+      <label>出題方向：</label>
+      <select id="direction">
+        <option value="normal">問題 → 答え</option>
+        <option value="reverse">答え → 問題</option>
+        <option value="random">ランダム</option>
+      </select>
+    </div>
 
-  <p>指定範囲の中からランダムで問題を出題します。</p>
+    <div class="form-group">
+      <label>出題する問題数：</label>
+      <input type="number" id="questionCount" min="1">
+    </div>
 
-  <label>出題する問題数：</label>
-  <input type="number" id="questionCount" min="1"><br><br>
+    <div class="form-group">
+      <label>開始番号：</label>
+      <input type="number" id="startNumber" min="1">
+    </div>
 
-  <label>開始番号：</label>
-  <input type="number" id="startNumber" min="1"><br><br>
+    <div class="form-group">
+      <label>終了番号：</label>
+      <input type="number" id="endNumber" min="1">
+    </div>
 
-  <label>終了番号：</label>
-  <input type="number" id="endNumber" min="1"><br><br>
+    <button class="generate-button" onclick="generateTest()">作成</button>
 
-  <button onclick="generateTest()">作成</button>
-
-  <div id="questionsContainer"></div>
+    <div id="questionsContainer"></div>
+  </div>
 
   <script>
-    // お試し問題：必要に応じてここを編集してください
     const allQuestions = [
       { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
 { number: 2, question: "increase", answer: "増加する；を増やす"},
@@ -1955,6 +1961,7 @@
       const count = parseInt(document.getElementById('questionCount').value);
       const start = parseInt(document.getElementById('startNumber').value);
       const end = parseInt(document.getElementById('endNumber').value);
+      const direction = document.getElementById('direction').value;
 
       if (isNaN(count) || count < 1) {
         alert("正しい問題数を入力してください。");
@@ -1981,27 +1988,37 @@
       container.innerHTML = '';
 
       selected.forEach((q) => {
+        let showQuestion, showAnswer;
+        let dir = direction;
+
+        if (dir === 'random') {
+          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        }
+
+        if (dir === 'normal') {
+          showQuestion = q.question;
+          showAnswer = q.answer;
+        } else {
+          showQuestion = q.answer;
+          showAnswer = q.question;
+        }
+
         const box = document.createElement('div');
         box.className = 'question-box';
         box.innerHTML = `
-          <div><strong>Q${q.number}.</strong> ${q.question}</div>
-          <button onclick="this.nextElementSibling.style.display='block'; this.remove()">答えをチェック</button>
-          <div class="answer" style="display: none;">答え：${q.answer}</div>
+          <div class="question"><strong>Q${q.number}.</strong> ${showQuestion}</div>
+          <button class="reveal-button" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">答えをチェック</button>
+          <div class="answer" style="display: none;">${showAnswer}</div>
         `;
         container.appendChild(box);
       });
     }
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(function(reg) {
-          console.log('ServiceWorker登録成功:', reg.scope);
-        })
-        .catch(function(err) {
-          console.log('ServiceWorker登録失敗:', err);
-        });
+      navigator.serviceWorker.register('/database1900/sw.js')
+        .then(reg => console.log('ServiceWorker登録成功:', reg.scope))
+        .catch(err => console.log('ServiceWorker登録失敗:', err));
     }
   </script>
-
 </body>
 </html>
