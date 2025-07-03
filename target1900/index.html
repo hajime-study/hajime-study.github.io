@@ -1,1 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>はじめ1900</title>
 
+  <!-- ファビコン -->
+  <link rel="icon" href="/target1900/target1900.png" type="image/png">
+
+  <!-- アップル用ホーム画面アイコン -->
+  <link rel="apple-touch-icon" href="/target1900/target1900.png" sizes="180x180">
+
+  <!-- PWAマニフェスト -->
+  <link rel="manifest" href="/target1900/manifest.json">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/target1900/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ターゲット1900</h1>
+    <p>指定範囲の中からランダムに問題を出題！</p>
+
+    <div class="form-group">
+      <label>出題方向：</label>
+      <select id="direction">
+        <option value="normal">英語 → 日本語</option>
+        <option value="reverse">日本語 → 英語</option>
+        <option value="random">ランダム</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>出題する問題数：</label>
+      <input type="number" id="questionCount" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>開始番号：</label>
+      <input type="number" id="startNumber" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>終了番号：</label>
+      <input type="number" id="endNumber" min="1">
+    </div>
+
+    <button class="generate-button" onclick="generateTest()">作成</button>
+
+    <div id="questionsContainer"></div>
+  </div>
+
+  <script>
+    const allQuestions = [
+      { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
+      { number: 2, question: "increase", answer: "増加する；を増やす"},
+      { number: 3, question: "zealous", answer: "熱心な；熱狂的な"}
+    ];
+
+    function generateTest() {
+      const count = parseInt(document.getElementById('questionCount').value);
+      const start = parseInt(document.getElementById('startNumber').value);
+      const end = parseInt(document.getElementById('endNumber').value);
+      const direction = document.getElementById('direction').value;
+
+      if (isNaN(count) || count < 1) {
+        alert("正しい問題数を入力してください。");
+        return;
+      }
+      if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
+        alert("正しい開始・終了番号を入力してください。");
+        return;
+      }
+
+      const filtered = allQuestions.filter(q => q.number >= start && q.number <= end);
+      if (filtered.length === 0) {
+        alert("指定範囲に問題がありません！");
+        return;
+      }
+      if (count > filtered.length) {
+        alert(`指定範囲には${filtered.length}問しかありません。`);
+        return;
+      }
+
+      const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, count);
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+
+      selected.forEach((q) => {
+        let showQuestion, showAnswer;
+        let dir = direction;
+
+        if (dir === 'random') {
+          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        }
+
+        if (dir === 'normal') {
+          showQuestion = q.question;
+          showAnswer = q.answer;
+        } else {
+          showQuestion = q.answer;
+          showAnswer = q.question;
+        }
+
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.innerHTML = `
+          <div class="question"><strong>Q${q.number}.</strong> ${showQuestion}</div>
+          <button class="reveal-button" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">答えをチェック</button>
+          <div class="answer" style="display: none;">${showAnswer}</div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/target1900/sw.js')
+        .then(reg => console.log('ServiceWorker登録成功:', reg.scope))
+        .catch(err => console.log('ServiceWorker登録失敗:', err));
+    }
+  </script>
+</body>
+</html>
