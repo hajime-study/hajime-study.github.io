@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: 'ZenKurenaido', sans-serif;
+  font-family: 'ZenKurenaido', 'Helvetica Neue', sans-serif;
   margin: 0;
   padding: 0;
   background: #f6f8fa;
@@ -47,26 +47,26 @@ input[type="number"], select {
   width: 100%;
   padding: 8px 12px;
   font-size: 16px;
+  box-sizing: border-box;
   border-radius: 6px;
   border: 1px solid #ccc;
-  box-sizing: border-box;
 }
 
-.generate-button, .pdf-button {
+.generate-button, .download-button {
   display: block;
   width: 100%;
   background: #007acc;
   color: #fff;
   font-size: 18px;
   padding: 12px;
-  margin-top: 10px;
+  margin-top: 15px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-.generate-button:hover, .pdf-button:hover {
+.generate-button:hover, .download-button:hover {
   background: #005fa3;
 }
 
@@ -83,9 +83,23 @@ input[type="number"], select {
   margin-bottom: 10px;
 }
 
+.reveal-button {
+  background: #28a745;
+  color: white;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.reveal-button:hover {
+  background: #1e7e34;
+}
+
 .answer {
   font-weight: bold;
   color: #d63384;
   font-size: 18px;
-  margin-top: 5px;
 }
