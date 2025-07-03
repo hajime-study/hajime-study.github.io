@@ -2,14 +2,18 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ターゲット1900</title>
+  <title>はじめ1900</title>
+
   <link rel="icon" href="/target1900/target1900.png" type="image/png">
   <link rel="apple-touch-icon" href="/target1900/target1900.png" sizes="180x180">
   <link rel="manifest" href="/target1900/manifest.json">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
+
   <link rel="stylesheet" href="/target1900/style.css">
+  <link rel="preload" href="/target1900/ZenKurenaido-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 </head>
 <body>
   <div class="container">
@@ -40,16 +44,14 @@
       <input type="number" id="endNumber" min="1">
     </div>
 
-    <button class="generate-button" id="btnGenerate">作成</button>
-    <button class="generate-button" id="btnPDF">PDFダウンロード</button>
+    <button class="generate-button" onclick="generateTest()">テスト作成</button>
+    <button class="download-button" onclick="downloadPDF()">PDFダウンロード</button>
 
     <div id="questionsContainer"></div>
   </div>
 
-  <!-- jsPDF（ES module版） -->
-  <script type="module">
-    import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js";
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
     const allQuestions = [
       { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
 { number: 2, question: "increase", answer: "増加する；を増やす"},
@@ -1953,95 +1955,100 @@
 { number: 1900, question: "zealous", answer: "熱心な；熱狂的な"}
     ];
 
-    let selectedQuestions = [];
-    let currentDirection = 'normal';
+    let currentTest = [];
 
-    document.getElementById('btnGenerate').addEventListener('click', () => {
+    function generateTest() {
       const count = parseInt(document.getElementById('questionCount').value);
       const start = parseInt(document.getElementById('startNumber').value);
       const end = parseInt(document.getElementById('endNumber').value);
-      const direction = document.getElementById('direction').value;
-      currentDirection = direction;
+      let direction = document.getElementById('direction').value;
 
-      if (isNaN(count) || count < 1) return alert("正しい問題数を入力してください。");
-      if (isNaN(start) || isNaN(end) || start < 1 || end < start) return alert("開始・終了番号を確認してください。");
+      if (isNaN(count) || count < 1 || isNaN(start) || isNaN(end) || start < 1 || end < start) {
+        alert("正しい値を入力してください。");
+        return;
+      }
 
       const filtered = allQuestions.filter(q => q.number >= start && q.number <= end);
-      if (filtered.length === 0) return alert("指定範囲に問題がありません！");
-      if (count > filtered.length) return alert(`指定範囲には${filtered.length}問しかありません。`);
+      if (filtered.length === 0 || count > filtered.length) {
+        alert("範囲内に十分な問題がありません。");
+        return;
+      }
 
-      selectedQuestions = [...filtered].sort(() => 0.5 - Math.random()).slice(0, count);
-      renderQuestions();
-    });
+      const shuffled = [...filtered].sort(() => Math.random() - 0.5).slice(0, count);
+      currentTest = shuffled.map(q => {
+        let dir = direction;
+        if (dir === 'random') {
+          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        }
 
-    function renderQuestions() {
+        return {
+          number: q.number,
+          question: dir === 'normal' ? q.question : q.answer,
+          answer: dir === 'normal' ? q.answer : q.question,
+        };
+      });
+
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
-      selectedQuestions.forEach(q => {
-        let dir = currentDirection === 'random' ? (Math.random() < 0.5 ? 'normal' : 'reverse') : currentDirection;
-        const showQ = dir === 'normal' ? q.question : q.answer;
-        const showA = dir === 'normal' ? q.answer : q.question;
 
+      currentTest.forEach((q, idx) => {
         const box = document.createElement('div');
         box.className = 'question-box';
         box.innerHTML = `
-          <div class="question"><strong>Q${q.number}.</strong> ${showQ}</div>
-          <button class="reveal-button">答えをチェック</button>
-          <div class="answer" style="display:none">${showA}</div>
+          <div class="question"><strong>Q${q.number}.</strong> ${q.question}</div>
+          <button class="reveal-button" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">答えをチェック</button>
+          <div class="answer" style="display: none;">${q.answer}</div>
         `;
-        box.querySelector('.reveal-button').addEventListener('click', e => {
-          e.target.style.display='none';
-          box.querySelector('.answer').style.display='block';
-        });
         container.appendChild(box);
       });
     }
 
-    document.getElementById('btnPDF').addEventListener('click', async () => {
-      if (selectedQuestions.length === 0) return alert("先にテストを作成してください。");
-
-      const fontUrl = "/target1900/ZenKurenaido-Regular.ttf";
-      const fontData = await fetch(fontUrl).then(r => r.arrayBuffer());
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(fontData)));
-
-      const startNo = selectedQuestions[0].number;
-      const endNo = selectedQuestions[selectedQuestions.length - 1].number;
-
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      doc.addFileToVFS("ZenKurenaido-Regular.ttf", base64);
+
+      const fontUrl = '/target1900/ZenKurenaido-Regular.ttf';
+      const fontRes = await fetch(fontUrl);
+      const fontData = await fontRes.arrayBuffer();
+      const base64Font = btoa(String.fromCharCode(...new Uint8Array(fontData)));
+
+      doc.addFileToVFS("ZenKurenaido-Regular.ttf", base64Font);
       doc.addFont("ZenKurenaido-Regular.ttf", "ZenKurenaido", "normal");
       doc.setFont("ZenKurenaido");
 
-      // 1ページ：問題
-      doc.setFontSize(16);
-      doc.text(`ターゲット1900［6訂版］（No.${startNo}〜No.${endNo}）`, 10, 20);
-      doc.setFontSize(12);
-      selectedQuestions.forEach((q, i) => {
-        let dir = currentDirection === 'random' ? (Math.random() < 0.5 ? 'normal' : 'reverse') : currentDirection;
-        const textQ = dir === 'normal' ? q.question : q.answer;
-        doc.text(`（${i+1}）${textQ}［${q.number}］`, 10, 30 + i*10);
-        doc.text(`（${i+1}）＿＿＿＿＿＿＿＿＿＿＿＿`, 110, 30 + i*10);
+      doc.setFontSize(14);
+      doc.text("【問題】", 10, 10);
+      let y = 20;
+
+      currentTest.forEach((q, i) => {
+        doc.text(`Q${q.number}. ${q.question}`, 10, y);
+        doc.line(150, y - 5, 200, y - 5);
+        y += 10;
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
       });
 
-      // 2ページ：解答
       doc.addPage();
-      doc.setFontSize(16);
-      doc.text("【解答】", 10, 20);
-      doc.setFontSize(12);
-      selectedQuestions.forEach((q, i) => {
-        let dir = currentDirection === 'random' ? (Math.random() < 0.5 ? 'normal' : 'reverse') : currentDirection;
-        const textA = dir === 'normal' ? q.answer : q.question;
-        doc.text(`（${i+1}）${textA}`, 10, 30 + i*10);
+      doc.text("【答え】", 10, 10);
+      y = 20;
+      currentTest.forEach((q, i) => {
+        doc.text(`Q${q.number}. ${q.answer}`, 10, y);
+        y += 10;
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
       });
 
       doc.save("target1900_test.pdf");
-    });
+    }
 
-    // Service Worker登録
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/target1900/sw.js')
-        .then(reg => console.log('SW登録成功', reg))
-        .catch(err => console.log('SW登録失敗', err));
+        .then(reg => console.log('ServiceWorker登録成功:', reg.scope))
+        .catch(err => console.log('ServiceWorker登録失敗:', err));
     }
   </script>
 </body>
