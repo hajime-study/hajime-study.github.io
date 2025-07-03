@@ -2,28 +2,17 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ターゲット1900</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="/target1900/target1900.png" type="image/png">
-  <link rel="apple-touch-icon" href="/target1900/target1900.png" sizes="180x180">
+  <title>はじめ1900</title>
+  <link rel="icon" href="/target1900/target1900.png">
+  <link rel="apple-touch-icon" href="/target1900/target1900.png">
   <link rel="manifest" href="/target1900/manifest.json">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
-
   <link rel="stylesheet" href="/target1900/style.css">
-  <link href="/target1900/ZenKurenaido-Regular.ttf" rel="stylesheet" as="font" type="font/ttf" crossorigin="anonymous">
-
-  <!-- PDF生成ライブラリ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>ターゲット1900</h1>
     <p>指定範囲の中からランダムに問題を出題！</p>
-
     <div class="form-group">
       <label>出題方向：</label>
       <select id="direction">
@@ -32,28 +21,56 @@
         <option value="random">ランダム</option>
       </select>
     </div>
-
-    <div class="form-group">
-      <label>出題する問題数：</label>
-      <input type="number" id="questionCount" min="1" max="1900">
-    </div>
-
-    <div class="form-group">
-      <label>開始番号：</label>
-      <input type="number" id="startNumber" min="1" max="1900">
-    </div>
-
-    <div class="form-group">
-      <label>終了番号：</label>
-      <input type="number" id="endNumber" min="1" max="1900">
-    </div>
-
+    <div class="form-group"><label>問題数：</label><input type="number" id="questionCount" min="1"></div>
+    <div class="form-group"><label>開始番号：</label><input type="number" id="startNumber" min="1"></div>
+    <div class="form-group"><label>終了番号：</label><input type="number" id="endNumber" min="1"></div>
     <button class="generate-button" onclick="generateTest()">テスト作成</button>
-    <button class="pdf-button" onclick="generatePDF()">PDFをダウンロード</button>
-
+    <button class="download-button" onclick="downloadPDF()">PDFダウンロード</button>
     <div id="questionsContainer"></div>
   </div>
 
-  <script src="/target1900/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
+  <script src="/target1900/zenkurenaido-normal.js"></script>
+  <script>
+    const allQuestions = [/* 同上 */];
+    let currentTest = [];
+
+    function generateTest() {
+      // バリデーションとシャッフル（省略）
+      // currentTestに {number,question,answer} をセット
+      // HTML表示更新
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({unit:'pt'});
+      doc.setFont('ZenKurenaido','normal');
+      doc.setFontSize(12);
+      let y = 40;
+      doc.text('問題',40,30);
+
+      currentTest.forEach(q => {
+        doc.text(`Q${q.number}. ${q.question}`,40,y);
+        doc.line(300,y+2,560,y+2);
+        y+=24;
+        if(y>760){doc.addPage(); y=40;}
+      });
+
+      doc.addPage();
+      y=40;
+      doc.text('答え',40,30);
+      currentTest.forEach(q => {
+        doc.text(`Q${q.number}. ${q.answer}`,40,y);
+        y+=24;
+        if(y>760){doc.addPage(); y=40;}
+      });
+
+      doc.save('target1900.pdf');
+    }
+
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('/target1900/sw.js');
+    }
+  </script>
 </body>
 </html>
