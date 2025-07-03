@@ -2,16 +2,13 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>はじめ1900</title>
-
+  <title>ターゲット1900</title>
   <link rel="icon" href="/target1900/target1900.png" type="image/png">
   <link rel="apple-touch-icon" href="/target1900/target1900.png" sizes="180x180">
   <link rel="manifest" href="/target1900/manifest.json">
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
-
   <link rel="stylesheet" href="/target1900/style.css">
 </head>
 <body>
@@ -22,7 +19,6 @@
     <div class="form-group">
       <label>出題方向：</label>
       <select id="direction">
-        <!-- 順番変更 -->
         <option value="reverse">日本語 → 英語</option>
         <option value="normal">英語 → 日本語</option>
         <option value="random">ランダム</option>
@@ -45,15 +41,14 @@
     </div>
 
     <button class="generate-button" onclick="generateTest()">作成</button>
-    <button class="generate-button" style="margin-top:10px;" onclick="downloadPDF()">PDFダウンロード</button>
+    <button class="generate-button" onclick="downloadPDF()">PDFダウンロード</button>
 
     <div id="questionsContainer"></div>
   </div>
 
-  <!-- jsPDF ライブラリ（CDN） -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module">
+    import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js";
 
-  <script>
     const allQuestions = [
       { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
 { number: 2, question: "increase", answer: "増加する；を増やす"},
@@ -1960,7 +1955,7 @@
     let selectedQuestions = [];
     let currentDirection = 'normal';
 
-    function generateTest() {
+    window.generateTest = function () {
       const count = parseInt(document.getElementById('questionCount').value);
       const start = parseInt(document.getElementById('startNumber').value);
       const end = parseInt(document.getElementById('endNumber').value);
@@ -1986,26 +1981,17 @@
       }
 
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-      selectedQuestions = shuffled.slice(0, count); // 保存する（PDF出力用）
+      selectedQuestions = shuffled.slice(0, count);
       currentDirection = direction;
 
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
 
-      selectedQuestions.forEach((q) => {
-        let showQuestion, showAnswer;
+      selectedQuestions.forEach((q, i) => {
         let dir = direction;
-        if (dir === 'random') {
-          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
-        }
-
-        if (dir === 'normal') {
-          showQuestion = q.question;
-          showAnswer = q.answer;
-        } else {
-          showQuestion = q.answer;
-          showAnswer = q.question;
-        }
+        if (dir === 'random') dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        const showQuestion = dir === 'normal' ? q.question : q.answer;
+        const showAnswer = dir === 'normal' ? q.answer : q.question;
 
         const box = document.createElement('div');
         box.className = 'question-box';
@@ -2018,51 +2004,44 @@
       });
     }
 
-    async function downloadPDF() {
+    window.downloadPDF = async function () {
       if (selectedQuestions.length === 0) {
         alert("先にテストを作成してください。");
         return;
       }
 
-      const { jsPDF } = window.jspdf;
+      const fontUrl = "/target1900/ZenKurenaido-Regular.ttf";
+      const fontBinary = await fetch(fontUrl).then(res => res.arrayBuffer());
+      const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBinary)));
+
+      const startNo = selectedQuestions[0].number;
+      const endNo = selectedQuestions[selectedQuestions.length - 1].number;
+
       const doc = new jsPDF();
+      doc.addFileToVFS("ZenKurenaido-Regular.ttf", fontBase64);
+      doc.addFont("ZenKurenaido-Regular.ttf", "ZenKurenaido", "normal");
+      doc.setFont("ZenKurenaido");
+      doc.setFontSize(16);
 
-      // 問題ページ
-      doc.setFontSize(18);
-      doc.text("【問題】", 10, 20);
-      doc.setFontSize(14);
+      // 表紙ページ
+      doc.text(`ターゲット1900［6訂版］（No.${startNo}〜No.${endNo}）`, 10, 20);
+      doc.setFontSize(12);
 
-      selectedQuestions.forEach((q, index) => {
-        let questionText;
+      selectedQuestions.forEach((q, i) => {
         let dir = currentDirection;
-        if (dir === 'random') {
-          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
-        }
+        if (dir === 'random') dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        const displayText = dir === 'normal' ? q.question : q.answer;
+        const line = `（${i + 1}）${displayText}［${q.number}］`;
+        const blank = `（${i + 1}）＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿`;
 
-        questionText = (dir === 'normal') ? q.question : q.answer;
-        doc.text(`${index + 1}. ${questionText}`, 10, 30 + index * 10);
-      });
-
-      // 改ページして解答ページ
-      doc.addPage();
-      doc.setFontSize(18);
-      doc.text("【解答】", 10, 20);
-      doc.setFontSize(14);
-
-      selectedQuestions.forEach((q, index) => {
-        let answerText;
-        let dir = currentDirection;
-        if (dir === 'random') {
-          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
-        }
-
-        answerText = (dir === 'normal') ? q.answer : q.question;
-        doc.text(`${index + 1}. ${answerText}`, 10, 30 + index * 10);
+        doc.text(line, 10, 30 + i * 12);
+        doc.text(blank, 110, 30 + i * 12);
       });
 
       doc.save("target1900_test.pdf");
     }
 
+    // PWA用
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/target1900/sw.js')
         .then(reg => console.log('ServiceWorker登録成功:', reg.scope))
