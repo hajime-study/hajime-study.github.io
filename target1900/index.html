@@ -4,13 +4,8 @@
   <meta charset="UTF-8">
   <title>はじめ1900</title>
 
-  <!-- ファビコン -->
   <link rel="icon" href="/target1900/target1900.png" type="image/png">
-
-  <!-- アップル用ホーム画面アイコン -->
   <link rel="apple-touch-icon" href="/target1900/target1900.png" sizes="180x180">
-
-  <!-- PWAマニフェスト -->
   <link rel="manifest" href="/target1900/manifest.json">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,8 +22,9 @@
     <div class="form-group">
       <label>出題方向：</label>
       <select id="direction">
-        <option value="normal">英語 → 日本語</option>
+        <!-- 順番変更 -->
         <option value="reverse">日本語 → 英語</option>
+        <option value="normal">英語 → 日本語</option>
         <option value="random">ランダム</option>
       </select>
     </div>
@@ -49,9 +45,13 @@
     </div>
 
     <button class="generate-button" onclick="generateTest()">作成</button>
+    <button class="generate-button" style="margin-top:10px;" onclick="downloadPDF()">PDFダウンロード</button>
 
     <div id="questionsContainer"></div>
   </div>
+
+  <!-- jsPDF ライブラリ（CDN） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
     const allQuestions = [
@@ -1957,6 +1957,9 @@
 { number: 1900, question: "zealous", answer: "熱心な；熱狂的な"}
     ];
 
+    let selectedQuestions = [];
+    let currentDirection = 'normal';
+
     function generateTest() {
       const count = parseInt(document.getElementById('questionCount').value);
       const start = parseInt(document.getElementById('startNumber').value);
@@ -1983,14 +1986,15 @@
       }
 
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, count);
+      selectedQuestions = shuffled.slice(0, count); // 保存する（PDF出力用）
+      currentDirection = direction;
+
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
 
-      selected.forEach((q) => {
+      selectedQuestions.forEach((q) => {
         let showQuestion, showAnswer;
         let dir = direction;
-
         if (dir === 'random') {
           dir = Math.random() < 0.5 ? 'normal' : 'reverse';
         }
@@ -2012,6 +2016,51 @@
         `;
         container.appendChild(box);
       });
+    }
+
+    async function downloadPDF() {
+      if (selectedQuestions.length === 0) {
+        alert("先にテストを作成してください。");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // 問題ページ
+      doc.setFontSize(18);
+      doc.text("【問題】", 10, 20);
+      doc.setFontSize(14);
+
+      selectedQuestions.forEach((q, index) => {
+        let questionText;
+        let dir = currentDirection;
+        if (dir === 'random') {
+          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        }
+
+        questionText = (dir === 'normal') ? q.question : q.answer;
+        doc.text(`${index + 1}. ${questionText}`, 10, 30 + index * 10);
+      });
+
+      // 改ページして解答ページ
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.text("【解答】", 10, 20);
+      doc.setFontSize(14);
+
+      selectedQuestions.forEach((q, index) => {
+        let answerText;
+        let dir = currentDirection;
+        if (dir === 'random') {
+          dir = Math.random() < 0.5 ? 'normal' : 'reverse';
+        }
+
+        answerText = (dir === 'normal') ? q.answer : q.question;
+        doc.text(`${index + 1}. ${answerText}`, 10, 30 + index * 10);
+      });
+
+      doc.save("target1900_test.pdf");
     }
 
     if ('serviceWorker' in navigator) {
