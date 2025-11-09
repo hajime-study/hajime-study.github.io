@@ -5,8 +5,7 @@ const urlsToCache = [
   '/target1900/style.css',
   '/target1900/manifest.json',
   '/target1900/sw.js',
-  '/target1900/target1900.png',
-  '/target1900/ZenKurenaido-Regular.ttf'
+  '/target1900/target1900.png'
 ];
 
 self.addEventListener('install', event => {
