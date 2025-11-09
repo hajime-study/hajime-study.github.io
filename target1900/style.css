@@ -1,12 +1,5 @@
-@font-face {
-  font-family: 'ZenKurenaido';
-  src: url('/target1900/ZenKurenaido-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 body {
-  font-family: 'ZenKurenaido', 'Helvetica Neue', sans-serif;
+  font-family: 'Helvetica Neue', sans-serif;
   margin: 0;
   padding: 0;
   background: #f6f8fa;
@@ -52,21 +45,21 @@ input[type="number"], select {
   border: 1px solid #ccc;
 }
 
-.generate-button, .download-button {
+.generate-button {
   display: block;
   width: 100%;
   background: #007acc;
   color: #fff;
   font-size: 18px;
   padding: 12px;
-  margin-top: 15px;
+  margin-top: 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-.generate-button:hover, .download-button:hover {
+.generate-button:hover {
   background: #005fa3;
 }
 
