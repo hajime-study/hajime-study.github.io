@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
 
-    <!-- PWA 基礎設定 -->
+    <!-- 表示設定 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ★ PWA（iOS対応 強化版）★ -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="はじめ1900">
-
-    <!-- ホーム画面に追加した時の背景色（青固定） -->
     <meta name="theme-color" content="#1e88e5">
-    <meta name="background-color" content="#1e88e5">
 
-    <!-- iOS スプラッシュ（青背景）-->
-    <link rel="apple-touch-startup-image" href="splash.png">
-    <link rel="apple-touch-icon" href="icon.png">
+    <!-- ★ ホーム画面アイコン（iOS用）★ -->
+    <!-- ⬆ iOS は manifest の icons を無視するので “絶対パス PNG” を複数サイズ指定  -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://hajime-study.github.io/target1900/target1900.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://hajime-study.github.io/target1900/target1900.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://hajime-study.github.io/target1900/target1900.png">
+
+    <!-- Android / Chrome 用 -->
+    <link rel="icon" type="image/png" href="https://hajime-study.github.io/target1900/target1900.png">
+
+    <!-- manifest.json（PWA必須） -->
+    <link rel="manifest" href="manifest.json">
 
     <title>はじめ1900</title>
 
@@ -25,17 +31,18 @@
 
 <body>
 
-    <!-- アプリ起動時のアニメーションロゴ（2秒以内消滅） -->
+    <!-- ★ アプリ起動アニメーション（2秒以内で消える）★ -->
     <div id="splashScreen">
         <h1 class="splashTitle">はじめ1900</h1>
     </div>
 
-    <!-- ヘッダー（デザインは CSS 側で整えてある） -->
+    <!-- ヘッダー -->
     <header id="appHeader">
         <h1>はじめ1900</h1>
     </header>
 
     <main>
+        <!-- 設定エリア -->
         <section id="settings">
             <label>モード選択：
                 <select id="mainMode">
@@ -45,6 +52,7 @@
                 </select>
             </label>
 
+            <!-- モードに応じて追加される部分 -->
             <div id="subSettings"></div>
 
             <div id="rangeSection">
@@ -52,7 +60,9 @@
                 <label>終了番号：<input type="number" id="endNumber" value="1900"></label>
             </div>
 
-            <label id="numQuestionsLabel">出題数：<input type="number" id="numQuestions" value="10"></label>
+            <label id="numQuestionsLabel">出題数：
+                <input type="number" id="numQuestions" value="10">
+            </label>
 
             <label>
                 <input type="checkbox" id="weakOnly"> 苦手ボックスのみから出題
@@ -81,7 +91,7 @@
     <script src="app.js"></script>
 
     <script>
-        // 起動アニメーション削除
+        /* 起動アニメーション */
         window.addEventListener("load", () => {
             setTimeout(() => {
                 document.getElementById("splashScreen").style.opacity = 0;
