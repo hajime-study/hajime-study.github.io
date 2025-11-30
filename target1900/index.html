@@ -1,169 +1,73 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>はじめ1900</title>
-
-<!-- PWA関連 -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="https://hajime-study.github.io/target1900/target1900.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#1e4fa3">
-
-<style>
-/* ======= 基本レイアウト ======= */
-body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #e5f0ff;
-}
-
-/* ======= ヘッダー（青いまま + デザイン改善） ======= */
-header {
-    background: linear-gradient(90deg, #1e4fa3, #447bd4);
-    color: white;
-    text-align: center;
-    padding: 18px 0;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    border-bottom: 3px solid #153b7a;
-}
-
-/* ======= セレクトボックスデザイン ======= */
-select, input[type="number"], input[type="text"] {
-    width: 90%;
-    max-width: 320px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 2px solid #1e4fa3;
-    margin: 8px 0;
-    background: white;
-    appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, #1e4fa3 50%),
-                      linear-gradient(135deg, #1e4fa3 50%, transparent 50%);
-    background-position: calc(100% - 15px) calc(50% - 4px),
-                         calc(100% - 10px) calc(50% - -4px);
-    background-size: 6px 6px;
-    background-repeat: no-repeat;
-}
-
-button {
-    padding: 10px 20px;
-    background: #1e4fa3;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-.box {
-    margin: 18px;
-    padding: 18px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* ====== 問題表示 ===== */
-#question-box {
-    font-size: 22px;
-    margin: 20px 0;
-    font-weight: 600;
-}
-
-#answer-box {
-    font-size: 20px;
-    margin: 10px 0;
-    display: none;
-}
-
-/* ====== 選択肢 ===== */
-.choice-button {
-    width: 90%;
-    max-width: 350px;
-    padding: 12px;
-    margin: 5px 0;
-    background: #fff;
-    border: 2px solid #1e4fa3;
-    border-radius: 6px;
-    font-size: 17px;
-}
-
-/* 入力欄（デコ強化） */
-.input-deco {
-    border: 2px solid #1e4fa3;
-    padding: 10px;
-    font-size: 18px;
-    border-radius: 6px;
-    width: 90%;
-    max-width: 350px;
-    outline: none;
-    background: #f7faff;
-}
-
-.input-deco:focus {
-    border-color: #447bd4;
-    box-shadow: 0 0 6px #447bd4;
-}
-
-/* 非表示 */
-.hidden {
-    display: none;
-}
-</style>
-
-</head>
 <body>
 
-<header>はじめ1900</header>
+    <!-- ★ 起動アニメーション削除 ★ -->
+    <!-- <div id="splashScreen">
+        <h1 class="splashTitle">はじめ1900</h1>
+    </div> -->
 
-<div class="box">
-    <h3>出題形式</h3>
-    <select id="modeSelect">
-        <option value="anki">暗記モード</option>
-        <option value="test">テストモード</option>
-    </select>
+    <!-- ヘッダー -->
+    <header id="appHeader">
+        <h1>はじめ1900</h1>
+    </header>
 
-    <h3>方向</h3>
-    <select id="directionSelect">
-        <option value="e2j">英語 → 日本語</option>
-        <option value="j2e">日本語 → 英語</option>
-        <option value="random">ランダム</option>
-    </select>
+    <main>
+        <!-- 設定エリア -->
+        <section id="settings">
+            <label>モード選択：
+                <select id="mainMode">
+                    <option value="">選択</option>
+                    <option value="test">テストモード</option>
+                    <option value="memorize">暗記モード</option>
+                </select>
+            </label>
 
-    <h3>出題順</h3>
-    <select id="orderSelect">
-        <option value="random">ランダム</option>
-        <option value="asc">昇順</option>
-        <option value="desc">降順</option>
-    </select>
+            <div id="subSettings"></div>
 
-    <h3 id="countLabel">出題数</h3>
-    <input type="number" id="questionCount" value="10" min="1">
+            <div id="rangeSection">
+                <label>開始番号：<input type="number" id="startNumber" value="1"></label>
+                <label>終了番号：<input type="number" id="endNumber" value="1900"></label>
+            </div>
 
-    <button onclick="start()">スタート</button>
-</div>
+            <label id="numQuestionsLabel">出題数：
+                <input type="number" id="numQuestions" value="10">
+            </label>
 
-<div class="box hidden" id="quizBox">
-    <div id="question-box"></div>
-    <div id="answer-box"></div>
+            <label>
+                <input type="checkbox" id="weakOnly"> 苦手ボックスのみから出題
+            </label>
 
-    <input id="freeInput" class="input-deco hidden" placeholder="ここに入力">
+            <button id="startBtn">開始</button>
+        </section>
 
-    <div id="choiceArea"></div>
+        <!-- テストモード -->
+        <section id="quiz" class="hidden">
+            <h2>テストモード</h2>
+            <div id="quizContainer"></div>
+        </section>
 
-    <button onclick="toggleAnswer()" id="showBtn">答えを見る</button>
-    <button onclick="toggleWeak()" id="weakBtn">苦手にする / 解除</button>
-    <button onclick="nextQuestion()">次へ</button>
-</div>
+        <!-- 暗記モード -->
+        <section id="memorizeSection" class="hidden">
+            <h2>暗記モード</h2>
 
-<script src="script.js"></script>
+            <button id="showAllBtn">すべて表示</button>
+            <button id="hideAllBtn">すべて隠す</button>
+
+            <div id="memorizeBox"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+
+    <!-- 起動アニメーション削除 -->
+    <!-- <script>
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                document.getElementById("splashScreen").style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById("splashScreen").style.display = "none";
+                }, 400);
+            }, 1300);
+        });
+    </script> -->
+
 </body>
-</html>
