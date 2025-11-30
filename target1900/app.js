@@ -1,7 +1,5 @@
 let words = [];
 let quizWords = [];
-let currentIndex = 0;
-let weakBox = [];
 let memorizeIndex = 0;
 
 fetch("words.json")
@@ -20,41 +18,44 @@ startBtn.addEventListener("click", () => {
     const end = parseInt(document.getElementById("endNumber").value);
     let num = parseInt(document.getElementById("numQuestions").value);
     const mode = document.getElementById("mode").value;
-    const order = document.getElementById("order").value;
-    const answerType = document.getElementById("answerType").value;
 
+    // 範囲内単語抽出
     quizWords = words.filter(w => w.number >= start && w.number <= end);
 
-    if(quizWords.length === 0) {
+    if(quizWords.length === 0){
         alert("指定範囲内に単語がありません。");
         return;
     }
 
-    if(order === "desc") quizWords.sort((a,b)=>b.number-a.number);
-    if(order === "random") quizWords.sort(()=>Math.random()-0.5);
+    if(mode !== "memorize") {
+        const order = document.getElementById("order").value;
+        if(order === "desc") quizWords.sort((a,b)=>b.number-a.number);
+        if(order === "random") quizWords.sort(()=>Math.random()-0.5);
+    }
 
     if(num > quizWords.length) num = quizWords.length;
     quizWords = quizWords.slice(0,num);
-
-    currentIndex = 0;
     memorizeIndex = 0;
 
-    if(mode === "memorize") {
+    if(mode === "memorize"){
         startMemorizeMode();
     } else {
-        startNormalMode(answerType, mode);
+        startNormalMode(mode);
     }
 });
 
-// 通常モード（英→日、日→英、ランダム）を下に全部表示
-function startNormalMode(answerType, mode) {
+// 通常モード：全問題表示
+function startNormalMode(mode){
     document.getElementById("quiz").classList.remove("hidden");
     document.getElementById("memorizeSection").classList.add("hidden");
     quizContainer.innerHTML = "";
 
-    quizWords.forEach(q => {
-        let text = (mode === "ja-en") ? q.answer : (mode === "random" && Math.random()<0.5 ? q.answer : q.question) : q.question;
-        let div = document.createElement("div");
+    quizWords.forEach(q=>{
+        let text = q.question;
+        if(mode === "ja-en") text = q.answer;
+        else if(mode === "random") text = Math.random() < 0.5 ? q.question : q.answer;
+
+        const div = document.createElement("div");
         div.classList.add("questionItem");
         div.innerHTML = `<strong>${text}</strong>: <input type="text" placeholder="ここに入力">`;
         quizContainer.appendChild(div);
@@ -62,12 +63,13 @@ function startNormalMode(answerType, mode) {
 }
 
 // 暗記モード
-function startMemorizeMode() {
+function startMemorizeMode(){
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("memorizeSection").classList.remove("hidden");
     memorizeBox.innerHTML = "";
+
     quizWords.forEach(q=>{
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.classList.add("questionItem");
         div.innerHTML = `<strong>${q.question}</strong>: <span class="answer" style="display:none;">${q.answer}</span>`;
         memorizeBox.appendChild(div);
