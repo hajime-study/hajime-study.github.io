@@ -1,116 +1,62 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>はじめ1900</title>
-<link rel="icon" href="/target1900/target1900.png">
-<link rel="apple-touch-icon" href="/target1900/target1900.png">
-<style>
-  body {
-    font-family: 'Helvetica Neue', sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  header {
-    background-color: #4CAF50;
-    color: white;
-    width: 100%;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.5em;
-  }
-  main {
-    width: 90%;
-    max-width: 600px;
-    margin-top: 20px;
-  }
-  .controls, .question-section {
-    background-color: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  label {
-    display: block;
-    margin: 5px 0 2px 0;
-  }
-  select, input[type="number"], button {
-    margin-bottom: 10px;
-    padding: 5px;
-    width: 100%;
-    font-size: 1em;
-  }
-  .question {
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  .answer {
-    margin-top: 5px;
-    color: #333;
-  }
-  .choices button {
-    margin: 5px 5px 5px 0;
-  }
-  .btn-small {
-    font-size: 0.9em;
-    padding: 3px 5px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>はじめ1900</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/target1900/target1900.png">
 </head>
 <body>
-<header>はじめ1900</header>
-<main>
-  <div class="controls">
-    <label>出題数</label>
-    <input type="number" id="numQuestions" value="10" min="1" max="10">
+  <header>
+    <h1>はじめ1900</h1>
+  </header>
 
-    <label>開始番号</label>
-    <input type="number" id="startNum" value="1" min="1" max="10">
+  <main>
+    <section class="settings">
+      <h2>出題設定</h2>
+      <label>開始番号: <input type="number" id="startNum" value="1"></label>
+      <label>終了番号: <input type="number" id="endNum" value="10"></label>
+      <label>出題形式:
+        <select id="mode">
+          <option value="eng2jp">英語→日本語</option>
+          <option value="jp2eng">日本語→英語</option>
+          <option value="random">ランダム</option>
+        </select>
+      </label>
+      <label>出題順序:
+        <select id="order">
+          <option value="asc">番号が若い順</option>
+          <option value="desc">番号が若くない順</option>
+          <option value="rand">ランダム順</option>
+        </select>
+      </label>
+      <label>選択肢の数: 
+        <select id="choices">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+      <button id="createBtn">作成</button>
+    </section>
 
-    <label>終了番号</label>
-    <input type="number" id="endNum" value="10" min="1" max="10">
+    <section class="quiz">
+      <h2>出題</h2>
+      <div id="questionArea"></div>
+      <button id="checkBtn">答えをチェック！</button>
+      <button id="toggleAnswerBtn">答えを隠す/表示</button>
+      <button id="addWeakBtn">苦手ボックスに入れる/消す</button>
+    </section>
 
-    <label>出題形式</label>
-    <select id="mode">
-      <option value="eng2jp">英語→日本語</option>
-      <option value="jp2eng">日本語→英語</option>
-      <option value="random">ランダム</option>
-    </select>
+    <section class="weakBox">
+      <h2>苦手ボックス</h2>
+      <ul id="weakList"></ul>
+    </section>
+  </main>
 
-    <label>出題順序</label>
-    <select id="order">
-      <option value="asc">通し番号が若い順</option>
-      <option value="desc">通し番号が若くない順</option>
-      <option value="randomOrder">ランダム順</option>
-    </select>
-
-    <label>選択肢の数</label>
-    <select id="choicesCount">
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-    </select>
-
-    <button id="createBtn">作成</button>
-  </div>
-
-  <div class="question-section" id="questionSection" style="display:none;">
-    <div class="question" id="questionText"></div>
-    <div class="choices" id="choices"></div>
-    <div class="answer" id="answerText"></div>
-    <button id="showAnswerBtn">答えをチェック！</button>
-    <button id="memorizeToggleBtn">答えを隠す</button>
-    <button id="favBtn">苦手ボックスに入れる</button>
-  </div>
-</main>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
