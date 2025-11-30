@@ -15,9 +15,15 @@ document.getElementById("startBtn").addEventListener("click", () => {
     const mode = document.getElementById("mode").value;
     const order = document.getElementById("order").value;
 
+    // 範囲内の単語を抽出
     quizWords = words.filter(w => w.number >= start && w.number <= end);
     
-    if(order === "desc") quizWords.reverse();
+    if(quizWords.length === 0) {
+        alert("指定範囲内に単語がありません。");
+        return;
+    }
+
+    if(order === "desc") quizWords.sort((a,b) => b.number - a.number);
     if(order === "random") quizWords.sort(() => Math.random() - 0.5);
 
     if(num > quizWords.length) num = quizWords.length;
@@ -41,8 +47,16 @@ function showQuestion() {
     }
     const q = quizWords[currentIndex];
     const mode = document.getElementById("mode").value;
-    document.getElementById("questionBox").innerText = (mode === "ja-en") ? q.answer : q.question;
-    document.getElementById("answerBox").innerHTML = `<input id="userAnswer" type="text">`;
+    const questionText = (mode === "ja-en") ? q.answer : q.question;
+    document.getElementById("questionBox").innerText = questionText;
+
+    const answerType = document.getElementById("answerType").value;
+    if(answerType === "input") {
+        document.getElementById("answerBox").innerHTML = `<input id="userAnswer" type="text" placeholder="ここに入力">`;
+    } else {
+        // 選択肢は後で追加可能
+        document.getElementById("answerBox").innerHTML = `<input id="userAnswer" type="text" placeholder="自由入力（選択肢未実装）">`;
+    }
 }
 
 document.getElementById("checkBtn").addEventListener("click", () => {
@@ -52,8 +66,13 @@ document.getElementById("checkBtn").addEventListener("click", () => {
 });
 
 document.getElementById("nextBtn").addEventListener("click", () => {
-    currentIndex++;
-    showQuestion();
+    if(currentIndex < quizWords.length - 1) {
+        currentIndex++;
+        showQuestion();
+    } else {
+        document.getElementById("questionBox").innerText = "終了です！";
+        document.getElementById("answerBox").innerHTML = "";
+    }
 });
 
 document.getElementById("addWeakBtn").addEventListener("click", () => {
