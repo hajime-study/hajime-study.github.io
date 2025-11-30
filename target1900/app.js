@@ -1,6 +1,7 @@
 let words = [];
 let quizWords = [];
-let weakBox = new Set();
+let weakBoxTest = new Set();
+let weakBoxMemorize = new Set();
 
 fetch("words.json")
     .then(res => res.json())
@@ -15,6 +16,8 @@ const memorizeBox = document.getElementById("memorizeBox");
 const showAllBtn = document.getElementById("showAllBtn");
 const hideAllBtn = document.getElementById("hideAllBtn");
 const weakOnly = document.getElementById("weakOnly");
+const rangeSection = document.getElementById("rangeSection");
+const numQuestionsLabel = document.getElementById("numQuestionsLabel");
 
 // プルダウン段階表示
 mainMode.addEventListener("change", ()=>{
@@ -46,6 +49,19 @@ mainMode.addEventListener("change", ()=>{
                     <option value="random">ランダム</option>
                 </select>
             </label>`;
+            subSettings.appendChild(nextDiv);
+
+            // 昇順/降順なら出題数非表示
+            document.getElementById("orderSelect").addEventListener("change", (e)=>{
+                if(e.target.value==="random"){
+                    numQuestionsLabel.style.display="block";
+                } else {
+                    numQuestionsLabel.style.display="none";
+                }
+            });
+            // 初期表示
+            const orderVal = document.getElementById("orderSelect").value;
+            numQuestionsLabel.style.display = orderVal==="random"?"block":"none";
         } else {
             nextDiv.innerHTML = `<label>回答方式:
                 <select id="answerTypeSelect">
@@ -53,9 +69,9 @@ mainMode.addEventListener("change", ()=>{
                     <option value="choice">選択肢</option>
                 </select>
             </label>`;
+            subSettings.appendChild(nextDiv);
+            numQuestionsLabel.style.display="block";
         }
-
-        subSettings.appendChild(nextDiv);
     });
 });
 
@@ -68,35 +84,39 @@ startBtn.addEventListener("click", ()=>{
     const order = mode==="memorize"?document.getElementById("orderSelect")?.value || "random":"random";
     const answerType = mode==="test"?document.getElementById("answerTypeSelect")?.value || "input":"input";
 
-    const startNum = parseInt(document.getElementById("startNumber").value) || 1;
-    const endNum = parseInt(document.getElementById("endNumber").value) || 10;
+    let startNum = parseInt(document.getElementById("startNumber").value) || 1;
+    let endNum = parseInt(document.getElementById("endNumber").value) || 10;
     let num = parseInt(document.getElementById("numQuestions").value) || 10;
 
-    // 範囲抽出
     quizWords = words.filter(w=>w.number>=startNum && w.number<=endNum);
+
+    // モード別苦手ボックス
+    let weakBox = mode==="memorize"?weakBoxMemorize:weakBoxTest;
     if(weakOnly.checked) quizWords = quizWords.filter(w=>weakBox.has(w.number));
+
     if(quizWords.length===0) return alert("範囲内に単語がありません。");
 
-    // 暗記モード
     if(mode==="memorize"){
-        if(order==="asc") quizWords = shuffleArray(quizWords.slice()).sort((a,b)=>a.number-b.number);
-        else if(order==="desc") quizWords = shuffleArray(quizWords.slice()).sort((a,b)=>b.number-a.number);
+        if(order==="asc") quizWords = quizWords.slice().sort((a,b)=>a.number-b.number);
+        else if(order==="desc") quizWords = quizWords.slice().sort((a,b)=>b.number-a.number);
         else quizWords = shuffleArray(quizWords.slice());
-        startMemorizeMode(format);
-    } else {
-        quizWords = shuffleArray(quizWords.slice()); // テストモードは常にランダム
-        startNormalMode(format, answerType);
-    }
 
-    if(num>quizWords.length) num=quizWords.length;
-    quizWords = quizWords.slice(0,num);
+        // ランダム以外は全出題
+        if(order!=="random") num = quizWords.length;
+        quizWords = quizWords.slice(0,num);
+        startMemorizeMode(format, weakBox);
+    } else {
+        quizWords = shuffleArray(quizWords.slice());
+        if(num>quizWords.length) num=quizWords.length;
+        quizWords = quizWords.slice(0,num);
+        startNormalMode(format, answerType, weakBox);
+    }
 });
 
-// shuffle
-function shuffleArray(array){return array.sort(()=>Math.random()-0.5);}
+function shuffleArray(arr){return arr.sort(()=>Math.random()-0.5);}
 
 // 通常モード
-function startNormalMode(format, answerType){
+function startNormalMode(format, answerType, weakBox){
     document.getElementById("quiz").classList.remove("hidden");
     document.getElementById("memorizeSection").classList.add("hidden");
     quizContainer.innerHTML="";
@@ -124,6 +144,7 @@ function startNormalMode(format, answerType){
         div.innerHTML = html;
         quizContainer.appendChild(div);
 
+        // 苦手ボタン
         div.querySelector(".weakBtn").addEventListener("click", ()=>{
             if(weakBox.has(q.number)){
                 weakBox.delete(q.number);
@@ -171,7 +192,7 @@ function generateChoices(q, format){
 }
 
 // 暗記モード
-function startMemorizeMode(format){
+function startMemorizeMode(format, weakBox){
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("memorizeSection").classList.remove("hidden");
     memorizeBox.innerHTML="";
@@ -188,6 +209,21 @@ function startMemorizeMode(format){
             const ans = div.querySelector(".answer");
             ans.style.display = ans.style.display==="none"?"inline":"none";
         });
+
+        // 苦手ボックス
+        const btn = document.createElement("button");
+        btn.innerText = weakBox.has(q.number)?"苦手解除":"苦手にする";
+        btn.classList.add("weakBtn");
+        btn.addEventListener("click", ()=>{
+            if(weakBox.has(q.number)){
+                weakBox.delete(q.number);
+                btn.innerText="苦手にする";
+            } else {
+                weakBox.add(q.number);
+                btn.innerText="苦手解除";
+            }
+        });
+        div.appendChild(btn);
     });
 }
 
