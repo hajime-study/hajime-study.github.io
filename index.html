@@ -1,27 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>はじめサイト</title>
-    <link rel="icon" href="/icon.jpeg" type="image/jpeg">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>はじめサイト</title>
+<link rel="icon" href="/icon.jpeg">
+<link rel="stylesheet" href="style.css">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#667eea">
 </head>
 <body>
-    <header>
-        <h1>はじめサイト</h1>
-    </header>
+<header>
+    <h1>はじめサイト</h1>
+</header>
 
-    <main>
-        <section id="appList">
-            <div class="appItem">
-                <a href="https://hajime-study.github.io/target1900" target="_blank">
-                    <img src="/icon.jpeg" alt="ターゲット1900アイコン" class="appIcon">
-                    <div class="appName">ターゲット1900</div>
-                </a>
-                <div class="appDate">2025.11.30〜</div>
-            </div>
-        </section>
-    </main>
+<main>
+    <section id="apps">
+        <div class="appCard">
+            <a href="https://hajime-study.github.io/target1900" target="_blank">
+                <img src="/icon.jpeg" alt="ターゲット1900" class="appIcon">
+                <div class="appName">ターゲット1900</div>
+            </a>
+        </div>
+        <!-- 今後アプリ増えたらここに追加 -->
+    </section>
+    <footer>
+        <p>2025.11.30〜</p>
+    </footer>
+</main>
+
+<script src="app.js"></script>
 </body>
 </html>
