@@ -33,7 +33,7 @@
                 <option value="random">ランダム</option>
             </select>
         </label>
-        <label>回答方式:
+        <label id="answerTypeLabel">回答方式:
             <select id="answerType">
                 <option value="input">自由入力</option>
                 <option value="choice">選択肢</option>
@@ -43,19 +43,16 @@
     </section>
 
     <section id="quiz" class="hidden">
-        <div id="questionBox"></div>
-        <div id="answerBox"></div>
-        <div class="buttons">
-            <button id="checkBtn">答えをチェック</button>
-            <button id="nextBtn">次へ</button>
-            <button id="addWeakBtn">苦手ボックスに入れる</button>
-        </div>
+        <div id="quizContainer"></div>
     </section>
 
     <section id="memorizeSection" class="hidden">
         <h2>暗記モード</h2>
         <div id="memorizeBox"></div>
-        <button id="showAnswerBtn">答えを表示</button>
+        <div class="memorizeButtons">
+            <button id="showNextAnswerBtn">次の答えを表示</button>
+            <button id="hideAllAnswersBtn">答えを隠す</button>
+        </div>
     </section>
 </main>
 
