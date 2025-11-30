@@ -35,6 +35,7 @@ h2 {
     margin-bottom: 0.5rem;
     border-left: 6px solid #667eea;
     padding-left: 0.5rem;
+    position: relative;
 }
 
 label {
@@ -52,8 +53,8 @@ input, select {
 }
 
 button {
-    margin: 0.5rem 0.3rem;
-    padding: 0.6rem 1.2rem;
+    margin: 0.3rem 0.3rem;
+    padding: 0.5rem 1rem;
     border: none;
     border-radius: 12px;
     background: linear-gradient(135deg, #667eea, #764ba2);
@@ -89,8 +90,5 @@ button:hover {
     color: black;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.memorizeButtons {
-    margin-top: 1rem;
+    cursor: pointer;
 }
