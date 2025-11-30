@@ -29,10 +29,10 @@ startBtn.addEventListener("click", () => {
         return;
     }
 
-    // ランダム化
-    if(order === "desc") quizWords.sort((a,b)=>b.number-a.number);
-    if(order === "asc") quizWords.sort((a,b)=>a.number-b.number);
-    if(order === "random") quizWords.sort(()=>Math.random()-0.5);
+    // 昇順・降順・ランダム処理
+    if(order === "asc") quizWords = quizWords.slice().sort((a,b)=>a.number-b.number);
+    if(order === "desc") quizWords = quizWords.slice().sort((a,b)=>b.number-a.number);
+    if(order === "random") quizWords = shuffleArray(quizWords.slice());
 
     // 出題数制限
     if(num > quizWords.length) num = quizWords.length;
@@ -47,7 +47,7 @@ startBtn.addEventListener("click", () => {
     }
 });
 
-// 通常モード：問題番号＋選択肢対応
+// 通常モード：問題番号なし、選択肢・自由入力対応
 function startNormalMode(mode, answerType){
     document.getElementById("quiz").classList.remove("hidden");
     document.getElementById("memorizeSection").classList.add("hidden");
@@ -57,7 +57,8 @@ function startNormalMode(mode, answerType){
         let text = (mode === "ja-en") ? q.answer : (mode === "random" && Math.random()<0.5 ? q.answer : q.question);
         const div = document.createElement("div");
         div.classList.add("questionItem");
-        let html = `<strong>${q.number}. ${text}</strong><br>`;
+
+        let html = `<strong>${text}</strong><br>`;
 
         if(answerType === "choice"){
             let options = generateChoices(q, mode);
@@ -65,27 +66,54 @@ function startNormalMode(mode, answerType){
             options.forEach(opt=>{
                 html += `<button class="choiceBtn">${opt}</button> `;
             });
+            html += `<div class="result"></div>`;
         } else {
-            html += `<input type="text" placeholder="ここに入力">`;
+            html += `<input type="text" class="userInput" placeholder="ここに入力">`;
+            html += `<button class="checkBtn">答え合わせ</button>`;
+            html += `<div class="result"></div>`;
         }
+
         div.innerHTML = html;
         quizContainer.appendChild(div);
     });
 
-    // 選択肢ボタンクリックでアラート表示
+    // 選択肢ボタンクリック
     document.querySelectorAll(".choiceBtn").forEach(btn=>{
         btn.addEventListener("click", e=>{
-            alert(`あなたの回答: ${e.target.innerText}`);
+            const parent = e.target.parentElement;
+            const ansDiv = parent.querySelector(".result");
+            const correct = quizWords[Array.from(quizContainer.children).indexOf(parent)];
+            if(e.target.innerText === ((mode==="ja-en")?correct.answer:correct.question)){
+                ansDiv.innerHTML = `<span style="color:green;">正解！</span>`;
+            } else {
+                ansDiv.innerHTML = `<span style="color:red;">不正解！あなた: ${e.target.innerText} 答え: ${(mode==="ja-en")?correct.answer:correct.question}</span>`;
+            }
+        });
+    });
+
+    // 自由入力ボタンクリック
+    document.querySelectorAll(".checkBtn").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+            const parent = e.target.parentElement;
+            const input = parent.querySelector(".userInput").value.trim();
+            const ansDiv = parent.querySelector(".result");
+            const correct = quizWords[Array.from(quizContainer.children).indexOf(parent)];
+            const correctText = (mode==="ja-en")?correct.answer:correct.question;
+            if(input === correctText){
+                ansDiv.innerHTML = `<span style="color:green;">正解！</span>`;
+            } else {
+                ansDiv.innerHTML = `<span style="color:red;">不正解！あなた: ${input} 答え: ${correctText}</span>`;
+            }
         });
     });
 }
 
 // 選択肢生成（正解 + 他3つ）
 function generateChoices(q, mode){
-    let pool = (mode === "ja-en") ? words.map(w=>w.answer) : words.map(w=>w.question);
-    pool = pool.filter(w=>w!== ((mode==="ja-en")?q.answer:q.question));
+    let pool = (mode==="ja-en") ? words.map(w=>w.answer) : words.map(w=>w.question);
+    pool = pool.filter(w=>w !== ((mode==="ja-en")?q.answer:q.question));
     pool = shuffleArray(pool).slice(0,3);
-    pool.push((mode==="ja-en")?q.answer:q.question);
+    pool.push((mode==="ja-en")?q.answer:q.question); // 必ず正解
     return pool;
 }
 
@@ -117,7 +145,6 @@ function startMemorizeMode(){
 showAllBtn.addEventListener("click", ()=>{
     memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="inline");
 });
-
 hideAllBtn.addEventListener("click", ()=>{
     memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="none");
 });
