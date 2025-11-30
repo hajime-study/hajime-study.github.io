@@ -1,4 +1,4 @@
-const cacheName = "hajime1900-v1";
+const cacheName = "hajime1900-v2";
 const assetsToCache = [
   "/target1900/",
   "/target1900/index.html",
@@ -10,16 +10,12 @@ const assetsToCache = [
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(cacheName).then(cache => {
-      return cache.addAll(assetsToCache);
-    })
+    caches.open(cacheName).then(cache => cache.addAll(assetsToCache))
   );
 });
 
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(res => {
-      return res || fetch(event.request);
-    })
+    caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
