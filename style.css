@@ -1,76 +1,208 @@
-* {margin:0;padding:0;box-sizing:border-box;}
-body {
-    font-family:'Helvetica Neue',sans-serif;
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
-    color: #000;
-    min-height:100vh;
+/* はじめサイト - style.css (全文) */
+
+/* リセット */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-header {
-    text-align:center;
-    padding:2rem 1rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-bottom-left-radius:25px;
-    border-bottom-right-radius:25px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.3);
-    color:#fff;
+:root{
+  --bg-1: #e0eafc;
+  --bg-2: #cfdef3;
+  --primary-1: #667eea;
+  --primary-2: #764ba2;
+  --card-bg-1: #ffffff;
+  --card-bg-2: #f1f1f1;
+  --muted: #6b7280;
 }
 
-header h1 {
-    font-size:2.5rem;
-    font-weight:900;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+/* 全体 */
+html,body{
+  height: 100%;
+  font-family: "Helvetica Neue", "Noto Sans JP", system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-main {
-    max-width:720px;
-    margin:2rem auto;
-    padding:1rem;
+/* コンテナ */
+main{
+  max-width: 980px;
+  margin: 28px auto;
+  padding: 20px;
 }
 
+/* ヘッダー */
+header{
+  max-width: 980px;
+  margin: 20px auto 0;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(38, 50, 80, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+/* header 内コンテンツを中央にしつつロゴも可能に */
+header .inner {
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+/* サイトタイトル */
+header h1{
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  margin-left: 8px;
+}
+
+/* 小さな右側リンク（ホームに戻るなど） */
+header .actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all .22s ease;
+}
+.header-btn:hover{
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.22);
+  color: #071033;
+  box-shadow: 0 8px 18px rgba(102,126,234,0.18);
+}
+
+/* アプリ一覧セクション */
 #apps {
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+  align-items: start;
 }
 
+/* 各カード */
 .appCard {
-    width:140px;
-    text-align:center;
-    background:linear-gradient(145deg, #ffffff, #f1f1f1);
-    border-radius:16px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+  background: linear-gradient(180deg, var(--card-bg-1), var(--card-bg-2));
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(17,24,39,0.06);
+  transition: transform .20s ease, box-shadow .20s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
 }
 
-.appCard:hover {
-    transform: translateY(-4px);
-    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+/* カードホバー */
+.appCard:hover{
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 18px 40px rgba(38,50,80,0.12);
 }
 
-.appCard a {
-    text-decoration:none;
-    color:#000;
-    display:block;
-    padding:1rem 0;
+/* リンク全体をクリック可能に */
+.appCard a{
+  color: inherit;
+  text-decoration: none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
 }
 
-.appIcon {
-    width:80px;
-    height:80px;
-    border-radius:20px;
-    margin-bottom:0.5rem;
+/* アイコン */
+.appIcon{
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(38,50,80,0.08);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.appName {
-    font-weight:700;
-    font-size:1.1rem;
+/* アイコンホバー */
+.appCard:hover .appIcon{
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(38,50,80,0.12);
 }
 
-footer {
-    text-align:center;
-    margin-top:2rem;
-    font-size:0.9rem;
-    color:#333;
+/* アプリ名 */
+.appName{
+  margin-top: 4px;
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: #0b1220;
+  letter-spacing: .2px;
+  text-align:center;
+}
+
+/* 補助テキスト（小さい日付） */
+footer{
+  margin-top: 28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* レスポンシブ調整 */
+@media (max-width:640px){
+  header{ padding: 16px; border-radius: 12px; margin: 12px; }
+  main{ padding:12px; margin-top: 12px; }
+  .appIcon{ width:72px; height:72px; border-radius:14px; }
+  .appCard{ padding:12px; border-radius:12px; }
+  header h1{ font-size:1.25rem; }
+}
+
+/* アクセシビリティ：フォーカス時のボーダー */
+.appCard a:focus, .header-btn:focus{
+  outline: 3px solid rgba(102,126,234,0.22);
+  outline-offset: 3px;
+}
+
+/* 微小アニメーション：カード入場 */
+@keyframes floatIn {
+  from { opacity:0; transform: translateY(12px) scale(.995); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.appCard{ animation: floatIn .45s cubic-bezier(.2,.8,.2,1) both; }
+
+/* 補助: 空の状態 */
+.emptyNotice{
+  text-align:center;
+  color:var(--muted);
+  padding: 40px 12px;
+  font-size: 1rem;
+}
+
+/* 画像読み込みが重いときのプレースホルダ見栄え */
+.appIcon[loading="lazy"]{
+  background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.02));
+}
+
+/* 高コントラスト対応の小さな調整 */
+@media (prefers-contrast: more){
+  header { box-shadow:none; }
+  .appCard { box-shadow:none; }
 }
