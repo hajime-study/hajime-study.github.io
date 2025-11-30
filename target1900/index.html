@@ -1,51 +1,96 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>はじめ1900</title>
-<link rel="icon" href="/target1900/target1900.png">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+
+    <!-- PWA 基礎設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="はじめ1900">
+
+    <!-- ホーム画面に追加した時の背景色（青固定） -->
+    <meta name="theme-color" content="#1e88e5">
+    <meta name="background-color" content="#1e88e5">
+
+    <!-- iOS スプラッシュ（青背景）-->
+    <link rel="apple-touch-startup-image" href="splash.png">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <title>はじめ1900</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<header>
-    <h1>はじめ1900</h1>
-    <a href="https://hajime-study.github.io" target="_blank" class="homeBtn">ホームに戻る</a>
-</header>
 
-<main>
-<section id="settings">
-    <label>モード:
-        <select id="mainMode">
-            <option value="">選択してください</option>
-            <option value="memorize">暗記モード</option>
-            <option value="test">テストモード</option>
-        </select>
-    </label>
-
-    <div id="subSettings"></div>
-
-    <div id="rangeSection">
-        <label>開始番号: <input type="number" id="startNumber" value="1" min="1"></label>
-        <label>終了番号: <input type="number" id="endNumber" value="10" min="1"></label>
-        <label id="numQuestionsLabel">出題数: <input type="number" id="numQuestions" value="10" min="1"></label>
-        <label><input type="checkbox" id="weakOnly"> 苦手ボックスのみ</label>
+    <!-- アプリ起動時のアニメーションロゴ（2秒以内消滅） -->
+    <div id="splashScreen">
+        <h1 class="splashTitle">はじめ1900</h1>
     </div>
 
-    <button id="startBtn">開始</button>
-</section>
+    <!-- ヘッダー（デザインは CSS 側で整えてある） -->
+    <header id="appHeader">
+        <h1>はじめ1900</h1>
+    </header>
 
-<section id="quiz" class="hidden">
-    <div id="quizContainer"></div>
-</section>
+    <main>
+        <section id="settings">
+            <label>モード選択：
+                <select id="mainMode">
+                    <option value="">選択</option>
+                    <option value="test">テストモード</option>
+                    <option value="memorize">暗記モード</option>
+                </select>
+            </label>
 
-<section id="memorizeSection" class="hidden">
-    <div id="memorizeBox"></div>
-    <button id="showAllBtn">一気に答えを表示</button>
-    <button id="hideAllBtn">一気に答えを隠す</button>
-</section>
+            <div id="subSettings"></div>
 
-<script src="app.js"></script>
-</main>
+            <div id="rangeSection">
+                <label>開始番号：<input type="number" id="startNumber" value="1"></label>
+                <label>終了番号：<input type="number" id="endNumber" value="1900"></label>
+            </div>
+
+            <label id="numQuestionsLabel">出題数：<input type="number" id="numQuestions" value="10"></label>
+
+            <label>
+                <input type="checkbox" id="weakOnly"> 苦手ボックスのみから出題
+            </label>
+
+            <button id="startBtn">開始</button>
+        </section>
+
+        <!-- テストモード -->
+        <section id="quiz" class="hidden">
+            <h2>テストモード</h2>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 暗記モード -->
+        <section id="memorizeSection" class="hidden">
+            <h2>暗記モード</h2>
+
+            <button id="showAllBtn">すべて表示</button>
+            <button id="hideAllBtn">すべて隠す</button>
+
+            <div id="memorizeBox"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+
+    <script>
+        // 起動アニメーション削除
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                document.getElementById("splashScreen").style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById("splashScreen").style.display = "none";
+                }, 400);
+            }, 1300);
+        });
+    </script>
+
 </body>
 </html>
