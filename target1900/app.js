@@ -51,7 +51,6 @@ mainMode.addEventListener("change", ()=>{
             </label>`;
             subSettings.appendChild(nextDiv);
 
-            // 昇順/降順なら出題数非表示
             const orderSelect = document.getElementById("orderSelect");
             const toggleNumInput = ()=>{ numQuestionsLabel.style.display = (orderSelect.value==="random")?"block":"none"; };
             orderSelect.addEventListener("change", toggleNumInput);
@@ -84,13 +83,11 @@ startBtn.addEventListener("click", ()=>{
 
     quizWords = words.filter(w=>w.number>=startNum && w.number<=endNum);
 
-    // モード別苦手ボックス
     let weakBox = mode==="memorize"?weakBoxMemorize:weakBoxTest;
     if(weakOnly.checked) quizWords = quizWords.filter(w=>weakBox.has(w.number));
 
     if(quizWords.length===0) return alert("範囲内に単語がありません。");
 
-    // 日本語→英語の場合に正しく問題・答えを反映
     const isJaEn = format==="ja-en";
 
     if(mode==="memorize"){
@@ -153,7 +150,6 @@ function startNormalMode(isJaEn, answerType, weakBox){
         });
     });
 
-    // 選択肢クリック
     document.querySelectorAll(".choiceBtn").forEach(btn=>{
         btn.addEventListener("click", e=>{
             const parent = e.target.parentElement;
@@ -165,7 +161,6 @@ function startNormalMode(isJaEn, answerType, weakBox){
         });
     });
 
-    // 自由入力
     document.querySelectorAll(".checkBtn").forEach(btn=>{
         btn.addEventListener("click", e=>{
             const parent = e.target.parentElement;
@@ -179,7 +174,6 @@ function startNormalMode(isJaEn, answerType, weakBox){
     });
 }
 
-// 選択肢生成
 function generateChoices(q, isJaEn){
     let pool = words.map(w=>isJaEn?w.question:w.answer);
     pool = pool.filter(w=>w!==((isJaEn)?q.question:q.answer));
@@ -201,19 +195,23 @@ function startMemorizeMode(isJaEn, weakBox){
         const questionText = isJaEn?q.answer:q.question;
         const answerText = isJaEn?q.question:q.answer;
 
+        // 答えはクリックで表示/非表示
         div.innerHTML=`<strong>${q.number}. ${questionText}</strong>: <span class="answer" style="display:none;">${answerText}</span>`;
         memorizeBox.appendChild(div);
 
-        div.addEventListener("click", ()=>{
-            const ans = div.querySelector(".answer");
-            ans.style.display = ans.style.display==="none"?"inline":"none";
+        div.addEventListener("click", (e)=>{
+            // クリックはボタン以外でのみ反応
+            if(e.target.tagName!=="BUTTON"){
+                const ans = div.querySelector(".answer");
+                ans.style.display = ans.style.display==="none"?"inline":"none";
+            }
         });
 
-        // 苦手ボタン
+        // 苦手ボタン（答えには影響しない）
         const btn = document.createElement("button");
         btn.innerText = weakBox.has(q.number)?"苦手解除":"苦手にする";
         btn.classList.add("weakBtn");
-        btn.addEventListener("click", ()=>{
+        btn.addEventListener("click", (e)=>{
             if(weakBox.has(q.number)){
                 weakBox.delete(q.number);
                 btn.innerText="苦手にする";
