@@ -1,62 +1,61 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>はじめ1900</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/target1900/target1900.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>はじめ1900</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <header>
-    <h1>はじめ1900</h1>
-  </header>
+    <header>
+        <h1>はじめ1900</h1>
+    </header>
 
-  <main>
-    <section class="settings">
-      <h2>出題設定</h2>
-      <label>開始番号: <input type="number" id="startNum" value="1"></label>
-      <label>終了番号: <input type="number" id="endNum" value="10"></label>
-      <label>出題形式:
-        <select id="mode">
-          <option value="eng2jp">英語→日本語</option>
-          <option value="jp2eng">日本語→英語</option>
-          <option value="random">ランダム</option>
-        </select>
-      </label>
-      <label>出題順序:
-        <select id="order">
-          <option value="asc">番号が若い順</option>
-          <option value="desc">番号が若くない順</option>
-          <option value="rand">ランダム順</option>
-        </select>
-      </label>
-      <label>選択肢の数: 
-        <select id="choices">
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-      </label>
-      <button id="createBtn">作成</button>
-    </section>
+    <main>
+        <section id="settings">
+            <h2>出題設定</h2>
+            <label>開始番号: <input type="number" id="startNumber" min="1" value="1"></label>
+            <label>終了番号: <input type="number" id="endNumber" min="1" value="10"></label>
+            <label>出題数: <input type="number" id="numQuestions" min="1" value="5"></label>
+            <label>出題形式:
+                <select id="mode">
+                    <option value="en-ja">英語→日本語</option>
+                    <option value="ja-en">日本語→英語</option>
+                    <option value="random">ランダム</option>
+                </select>
+            </label>
+            <label>出題順序:
+                <select id="order">
+                    <option value="asc">昇順</option>
+                    <option value="desc">降順</option>
+                    <option value="random">ランダム</option>
+                </select>
+            </label>
+            <label>回答方式:
+                <select id="answerType">
+                    <option value="input">自由入力</option>
+                    <option value="choice">選択肢</option>
+                </select>
+            </label>
+            <button id="startBtn">開始</button>
+        </section>
 
-    <section class="quiz">
-      <h2>出題</h2>
-      <div id="questionArea"></div>
-      <button id="checkBtn">答えをチェック！</button>
-      <button id="toggleAnswerBtn">答えを隠す/表示</button>
-      <button id="addWeakBtn">苦手ボックスに入れる/消す</button>
-    </section>
+        <section id="quiz" class="hidden">
+            <div id="questionBox"></div>
+            <div id="answerBox"></div>
+            <button id="checkBtn">答えをチェック</button>
+            <button id="nextBtn">次へ</button>
+            <button id="addWeakBtn">苦手ボックスに入れる</button>
+        </section>
 
-    <section class="weakBox">
-      <h2>苦手ボックス</h2>
-      <ul id="weakList"></ul>
-    </section>
-  </main>
+        <section id="memorize" class="hidden">
+            <h2>暗記モード</h2>
+            <div id="memorizeBox"></div>
+            <button id="hideAnswerBtn">答えを隠す</button>
+        </section>
+    </main>
 
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
