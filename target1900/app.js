@@ -104,7 +104,7 @@ startBtn.addEventListener("click", ()=>{
 
 function shuffleArray(arr){return arr.sort(()=>Math.random()-0.5);}
 
-// 通常モード
+// 通常モード（テストモード）
 function startNormalMode(format, answerType, weakBox){
     document.getElementById("quiz").classList.remove("hidden");
     document.getElementById("memorizeSection").classList.add("hidden");
@@ -114,7 +114,6 @@ function startNormalMode(format, answerType, weakBox){
         const div = document.createElement("div");
         div.classList.add("questionItem");
 
-        // ランダム形式は毎回ランダムに英語/日本語
         let isJaEn;
         if(format==="random") isJaEn = Math.random()<0.5;
         else isJaEn = format==="ja-en";
@@ -151,10 +150,13 @@ function startNormalMode(format, answerType, weakBox){
         });
 
         // 選択肢ボタン
-        div.querySelectorAll(".choiceBtn").forEach(btn=>{
+        const choiceBtns = div.querySelectorAll(".choiceBtn");
+        choiceBtns.forEach(btn=>{
             btn.addEventListener("click", e=>{
                 const correct = answerText;
                 const ansDiv = div.querySelector(".result");
+                choiceBtns.forEach(b=>b.style.opacity=0.6);
+                e.target.style.opacity = 1;
                 if(e.target.innerText===correct) ansDiv.innerHTML=`<span style="color:green;">正解！</span>`;
                 else ansDiv.innerHTML=`<span style="color:red;">不正解！あなた: ${e.target.innerText} 答え: ${correct}</span>`;
             });
@@ -172,7 +174,7 @@ function startNormalMode(format, answerType, weakBox){
     });
 }
 
-// 暗記モード
+// 暗記モードはそのまま
 function startMemorizeMode(format, weakBox){
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("memorizeSection").classList.remove("hidden");
@@ -182,7 +184,6 @@ function startMemorizeMode(format, weakBox){
         const div = document.createElement("div");
         div.classList.add("questionItem");
 
-        // ランダム形式は毎問ランダムに英語/日本語
         let isJaEn;
         if(format==="random") isJaEn = Math.random()<0.5;
         else isJaEn = format==="ja-en";
@@ -218,3 +219,11 @@ function startMemorizeMode(format, weakBox){
 
 showAllBtn.addEventListener("click", ()=>memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="inline"));
 hideAllBtn.addEventListener("click", ()=>memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="none"));
+
+// 選択肢生成関数
+function generateChoices(correctWord, isJaEn){
+    let pool = words.map(w=>isJaEn?w.answer:w.question).filter(x=>x!== (isJaEn?correctWord.answer:correctWord.question));
+    pool = shuffleArray(pool).slice(0,3);
+    pool.push(isJaEn?correctWord.answer:correctWord.question);
+    return pool;
+}
