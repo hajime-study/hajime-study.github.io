@@ -15,31 +15,22 @@
 <main>
     <section id="settings">
         <h2>出題設定</h2>
-        <label>開始番号: <input type="number" id="startNumber" min="1" value="1"></label>
-        <label>終了番号: <input type="number" id="endNumber" min="1" value="10"></label>
-        <label>出題数: <input type="number" id="numQuestions" min="1" value="5"></label>
-        <label>出題形式:
-            <select id="mode">
-                <option value="en-ja">英語→日本語</option>
-                <option value="ja-en">日本語→英語</option>
-                <option value="random">ランダム</option>
+        <!-- 最初にモード選択 -->
+        <label>モード:
+            <select id="mainMode">
+                <option value="">選択してください</option>
                 <option value="memorize">暗記モード</option>
+                <option value="test">テストモード</option>
             </select>
         </label>
-        <label>出題順序:
-            <select id="order">
-                <option value="asc">昇順</option>
-                <option value="desc">降順</option>
-                <option value="random">ランダム</option>
-            </select>
-        </label>
-        <label id="answerTypeLabel">回答方式:
-            <select id="answerType">
-                <option value="input">自由入力</option>
-                <option value="choice">選択肢</option>
-            </select>
-        </label>
-        <button id="startBtn">開始</button>
+
+        <!-- 後続プルダウンはここに動的追加 -->
+        <div id="subSettings"></div>
+
+        <!-- 苦手ボックスのみ出題 -->
+        <label><input type="checkbox" id="weakOnly"> 苦手ボックスのみ出題</label>
+
+        <button id="startBtn" class="hidden">開始</button>
     </section>
 
     <section id="quiz" class="hidden">
