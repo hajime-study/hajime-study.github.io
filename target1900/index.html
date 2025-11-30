@@ -15,7 +15,7 @@
 <main>
     <section id="settings">
         <h2>出題設定</h2>
-        <!-- 最初にモード選択 -->
+
         <label>モード:
             <select id="mainMode">
                 <option value="">選択してください</option>
@@ -24,10 +24,13 @@
             </select>
         </label>
 
-        <!-- 後続プルダウンはここに動的追加 -->
         <div id="subSettings"></div>
 
-        <!-- 苦手ボックスのみ出題 -->
+        <!-- 範囲選択 -->
+        <label>開始番号: <input type="number" id="startNumber" value="1" min="1"></label>
+        <label>終了番号: <input type="number" id="endNumber" value="10" min="1"></label>
+        <label>出題数: <input type="number" id="numQuestions" value="10" min="1"></label>
+
         <label><input type="checkbox" id="weakOnly"> 苦手ボックスのみ出題</label>
 
         <button id="startBtn" class="hidden">開始</button>
