@@ -1,139 +1,226 @@
-/* 全体 */
-* {margin:0;padding:0;box-sizing:border-box;}
-body {
-    font-family:'Helvetica Neue',sans-serif;
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
-    color: #000;
-    min-height:100vh;
+/* ===========================
+   RESET
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ヘッダー */
+html, body {
+  font-family: "Helvetica Neue", "Noto Sans JP", sans-serif;
+  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  min-height: 100vh;
+  color: #111;
+}
+
+/* ===========================
+   ヘッダー（新デザイン継続）
+=========================== */
+
 header {
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    padding:1rem 2rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    border-bottom-left-radius:25px;
-    border-bottom-right-radius:25px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  width: 100%;
+  padding: 20px 28px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
 }
 
-header h1 {
-    font-size:2rem;
-    font-weight:900;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+header .title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-shadow: 0 3px 12px rgba(0,0,0,0.25);
 }
 
-header a.homeBtn {
-    background: rgba(255,255,255,0.2);
-    color:#fff;
-    padding:0.5rem 1rem;
-    border-radius:12px;
-    text-decoration:none;
-    font-weight:700;
-    transition: 0.3s;
-}
-header a.homeBtn:hover {
-    background: rgba(255,255,255,0.5);
-    color:#000;
+header .home-link {
+  background: rgba(255,255,255,0.15);
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  font-weight: 700;
+  transition: 0.2s;
 }
 
-/* メイン設定セクション */
-#settings {
-    max-width:720px;
-    margin:2rem auto;
-    padding:1rem;
-    background: rgba(255,255,255,0.8);
-    border-radius:20px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+header .home-link:hover {
+  background: rgba(255,255,255,0.3);
+  color: #0f1030;
 }
 
-#settings label {
-    display:block;
-    margin:1rem 0;
-    font-weight:600;
+/* ===========================
+   ここから下、以前のデザインに完全復元
+=========================== */
+
+/* 中央コンテナ */
+main {
+  max-width: 860px;
+  margin: 20px auto;
+  background: #ffffffcc;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
-#settings input[type="number"] {
-    width:60px;
-    padding:0.3rem;
-    border-radius:8px;
-    border:1px solid #ccc;
+/* セクションタイトル */
+.section-title {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: bold;
+  margin: 14px 0 6px;
 }
 
-/* プルダウン */
-#settings select {
-    padding:0.5rem;
-    border-radius:10px;
-    border:1px solid #ccc;
-    font-weight:600;
-    background: linear-gradient(135deg, #ffffff, #f0f4ff);
-    transition:0.3s;
-}
-#settings select:hover {background: linear-gradient(135deg, #e6eaff, #f0f4ff);}
-
-/* ボタン */
-#settings button,
-#memorizeSection button {
-    margin-top:1rem;
-    padding:0.6rem 1rem;
-    border:none;
-    border-radius:12px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color:#fff;
-    font-weight:700;
-    cursor:pointer;
-    transition:0.3s;
-}
-#settings button:hover,
-#memorizeSection button:hover {
-    background: linear-gradient(135deg, #764ba2, #667eea);
+/* プルダウン基本デザイン（前のやつに戻す） */
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #a4b7e1;
+  background: #f7faff;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  outline: none;
+  transition: 0.2s;
 }
 
-/* クイズ・暗記モード */
-.hidden {display:none;}
-
-.questionItem {
-    margin:1rem 0;
-    padding:0.5rem 1rem;
-    border-radius:12px;
-    background: linear-gradient(145deg, #ffffff, #f0f4ff);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 6px rgba(102,126,234,0.3);
 }
 
-.questionItem strong {font-size:1.1rem;}
-
-.userInput {
-    width:200px;
-    padding:0.4rem 0.6rem;
-    margin-right:0.5rem;
-    border-radius:8px;
-    border:1px solid #ccc;
-    transition:0.3s;
+/* 入力フォーム（出題数など） */
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #a4b7e1;
+  background: #f7faff;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  outline: none;
+  transition: 0.2s;
 }
-.userInput:focus {border-color:#667eea; outline:none; box-shadow:0 0 5px rgba(102,126,234,0.5);}
 
-.choiceBtn {
-    margin:0.3rem 0.2rem;
-    padding:0.4rem 0.8rem;
-    border:none;
-    border-radius:8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
+input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 6px rgba(102,126,234,0.3);
 }
-.choiceBtn:hover {background: linear-gradient(135deg, #764ba2, #667eea);}
 
-/* 答え表示 */
-.result {margin-top:0.5rem;}
-.answer {font-weight:700; color:#000;}
+/* ボタン類 */
+button {
+  padding: 10px 16px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
 
-/* 暗記モードボックス */
-#memorizeBox .questionItem {cursor:pointer;}
+button:hover {
+  background: #5568d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 暗記モードの単語カード（元の青系デザインに復元） */
+.word-card {
+  background: linear-gradient(135deg, #ffffff, #f0f4ff);
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin: 12px 0;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.word-card:hover {
+  transform: translateY(-3px);
+}
+
+/* 答え部分 */
+.answer {
+  margin-top: 8px;
+  padding: 10px;
+  background: #eef3ff;
+  border-left: 4px solid #667eea;
+  border-radius: 6px;
+  font-weight: bold;
+  display: none;
+}
+
+/* 選択肢 */
+.choice-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice {
+  padding: 12px 14px;
+  background: #f8faff;
+  border: 1px solid #a4b7e1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.choice:hover {
+  background: #e9efff;
+}
+
+/* 正解・不正解表示 */
+.correct {
+  border-color: #4ade80;
+  background: #ecfdf5;
+}
+
+.wrong {
+  border-color: #f87171;
+  background: #fef2f2;
+}
+
+/* 苦手ボタン */
+.bad-btn {
+  margin-left: 8px;
+  padding: 6px 12px;
+  background: #fbbf24;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.bad-btn:hover {
+  background: #d79c15;
+}
+
+/* 結果表示 */
+.result-box {
+  padding: 14px;
+  margin-top: 20px;
+  background: #f0f4ff;
+  border-radius: 10px;
+  border-left: 6px solid #667eea;
+}
 
 /* フッター */
-footer {text-align:center; margin-top:2rem; font-size:0.9rem; color:#333;}
+footer {
+  text-align: center;
+  color: #556;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
