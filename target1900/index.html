@@ -1,9 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- 表示設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ★ PWA（iOS対応 強化版）★ -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e88e5">
+
+    <!-- ★ ホーム画面アイコン（iOS用）★ -->
+    <!-- ⬆ iOS は manifest の icons を無視するので “絶対パス PNG” を複数サイズ指定  -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://hajime-study.github.io/target1900/target1900.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://hajime-study.github.io/target1900/target1900.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://hajime-study.github.io/target1900/target1900.png">
+
+    <!-- Android / Chrome 用 -->
+    <link rel="icon" type="image/png" href="https://hajime-study.github.io/target1900/target1900.png">
+
+    <!-- manifest.json（PWA必須） -->
+    <link rel="manifest" href="manifest.json">
+
+    <title>はじめ1900</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
 
-    <!-- ★ 起動アニメーション削除 ★ -->
-    <!-- <div id="splashScreen">
+    <!-- ★ アプリ起動アニメーション（2秒以内で消える）★ -->
+    <div id="splashScreen">
         <h1 class="splashTitle">はじめ1900</h1>
-    </div> -->
+    </div>
 
     <!-- ヘッダー -->
     <header id="appHeader">
@@ -21,6 +52,7 @@
                 </select>
             </label>
 
+            <!-- モードに応じて追加される部分 -->
             <div id="subSettings"></div>
 
             <div id="rangeSection">
@@ -58,8 +90,8 @@
 
     <script src="app.js"></script>
 
-    <!-- 起動アニメーション削除 -->
-    <!-- <script>
+    <script>
+        /* 起動アニメーション */
         window.addEventListener("load", () => {
             setTimeout(() => {
                 document.getElementById("splashScreen").style.opacity = 0;
@@ -68,6 +100,7 @@
                 }, 400);
             }, 1300);
         });
-    </script> -->
+    </script>
 
 </body>
+</html>
