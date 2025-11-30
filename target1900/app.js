@@ -19,7 +19,6 @@ const weakOnly = document.getElementById("weakOnly");
 // プルダウン段階表示
 mainMode.addEventListener("change", ()=>{
     subSettings.innerHTML = "";
-    startBtn.classList.add("hidden");
     const mode = mainMode.value;
     if(!mode) return;
 
@@ -57,7 +56,6 @@ mainMode.addEventListener("change", ()=>{
         }
 
         subSettings.appendChild(nextDiv);
-        startBtn.classList.remove("hidden");
     });
 });
 
@@ -65,40 +63,134 @@ mainMode.addEventListener("change", ()=>{
 startBtn.addEventListener("click", ()=>{
     const mode = mainMode.value;
     const format = document.getElementById("formatSelect")?.value;
-    if(!format) return;
+    if(!mode || !format) return alert("モードと出題形式を選択してください。");
 
-    let order = "random";
-    let answerType = "input";
-    if(mode==="memorize") order = document.getElementById("orderSelect")?.value || "random";
-    else answerType = document.getElementById("answerTypeSelect")?.value || "input";
+    const order = mode==="memorize"?document.getElementById("orderSelect")?.value || "random":"random";
+    const answerType = mode==="test"?document.getElementById("answerTypeSelect")?.value || "input":"input";
 
-    let startNum = parseInt(document.getElementById("startNumber").value) || 1;
-    let endNum = parseInt(document.getElementById("endNumber").value) || 10;
+    const startNum = parseInt(document.getElementById("startNumber").value) || 1;
+    const endNum = parseInt(document.getElementById("endNumber").value) || 10;
     let num = parseInt(document.getElementById("numQuestions").value) || 10;
 
+    // 範囲抽出
     quizWords = words.filter(w=>w.number>=startNum && w.number<=endNum);
     if(weakOnly.checked) quizWords = quizWords.filter(w=>weakBox.has(w.number));
-
-    if(quizWords.length === 0){
-        alert("指定範囲内に単語がありません。");
-        return;
-    }
+    if(quizWords.length===0) return alert("範囲内に単語がありません。");
 
     // 暗記モード
     if(mode==="memorize"){
         if(order==="asc") quizWords = shuffleArray(quizWords.slice()).sort((a,b)=>a.number-b.number);
-        if(order==="desc") quizWords = shuffleArray(quizWords.slice()).sort((a,b)=>b.number-a.number);
-        if(order==="random") quizWords = shuffleArray(quizWords.slice());
+        else if(order==="desc") quizWords = shuffleArray(quizWords.slice()).sort((a,b)=>b.number-a.number);
+        else quizWords = shuffleArray(quizWords.slice());
         startMemorizeMode(format);
     } else {
-        // テストモードは常にランダム
-        quizWords = shuffleArray(quizWords.slice());
+        quizWords = shuffleArray(quizWords.slice()); // テストモードは常にランダム
         startNormalMode(format, answerType);
     }
 
-    // 出題数調整
-    if(num>quizWords.length) num = quizWords.length;
+    if(num>quizWords.length) num=quizWords.length;
     quizWords = quizWords.slice(0,num);
 });
 
-// 以下は前回の startNormalMode / startMemorizeMode / generateChoices / shuffleArray をそのまま使用
+// shuffle
+function shuffleArray(array){return array.sort(()=>Math.random()-0.5);}
+
+// 通常モード
+function startNormalMode(format, answerType){
+    document.getElementById("quiz").classList.remove("hidden");
+    document.getElementById("memorizeSection").classList.add("hidden");
+    quizContainer.innerHTML="";
+
+    quizWords.forEach((q,i)=>{
+        const div = document.createElement("div");
+        div.classList.add("questionItem");
+        const questionText = format==="ja-en"?q.question:q.question;
+        const answerText = format==="ja-en"?q.answer:q.answer;
+
+        let html = `<strong>${q.number}. ${questionText}</strong><br>`;
+
+        if(answerType==="choice"){
+            let options = generateChoices(q, format);
+            options = shuffleArray(options);
+            options.forEach(opt=>html+=`<button class="choiceBtn">${opt}</button> `);
+            html+=`<div class="result"></div>`;
+        } else {
+            html+=`<input type="text" class="userInput" placeholder="ここに入力">
+                   <button class="checkBtn">答え合わせ</button>
+                   <div class="result"></div>`;
+        }
+
+        html+=`<button class="weakBtn">${weakBox.has(q.number)?"苦手解除":"苦手にする"}</button>`;
+        div.innerHTML = html;
+        quizContainer.appendChild(div);
+
+        div.querySelector(".weakBtn").addEventListener("click", ()=>{
+            if(weakBox.has(q.number)){
+                weakBox.delete(q.number);
+                div.querySelector(".weakBtn").innerText="苦手にする";
+            } else {
+                weakBox.add(q.number);
+                div.querySelector(".weakBtn").innerText="苦手解除";
+            }
+        });
+    });
+
+    // 選択肢クリック
+    document.querySelectorAll(".choiceBtn").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+            const parent = e.target.parentElement;
+            const idx = Array.from(quizContainer.children).indexOf(parent);
+            const correct = format==="ja-en"?quizWords[idx].answer:quizWords[idx].answer;
+            const ansDiv = parent.querySelector(".result");
+            if(e.target.innerText===correct) ansDiv.innerHTML=`<span style="color:green;">正解！</span>`;
+            else ansDiv.innerHTML=`<span style="color:red;">不正解！あなた: ${e.target.innerText} 答え: ${correct}</span>`;
+        });
+    });
+
+    // 自由入力
+    document.querySelectorAll(".checkBtn").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+            const parent = e.target.parentElement;
+            const idx = Array.from(quizContainer.children).indexOf(parent);
+            const correct = format==="ja-en"?quizWords[idx].answer:quizWords[idx].answer;
+            const input = parent.querySelector(".userInput").value.trim();
+            const ansDiv = parent.querySelector(".result");
+            if(input===correct) ansDiv.innerHTML=`<span style="color:green;">正解！</span>`;
+            else ansDiv.innerHTML=`<span style="color:red;">不正解！あなた: ${input} 答え: ${correct}</span>`;
+        });
+    });
+}
+
+// 選択肢生成
+function generateChoices(q, format){
+    let pool = words.map(w=>format==="ja-en"?w.answer:w.answer);
+    pool = pool.filter(w=>w!==((format==="ja-en")?q.answer:q.answer));
+    pool = shuffleArray(pool).slice(0,3);
+    pool.push((format==="ja-en")?q.answer:q.answer);
+    return pool;
+}
+
+// 暗記モード
+function startMemorizeMode(format){
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("memorizeSection").classList.remove("hidden");
+    memorizeBox.innerHTML="";
+
+    quizWords.forEach(q=>{
+        const div = document.createElement("div");
+        div.classList.add("questionItem");
+        const questionText = format==="ja-en"?q.question:q.question;
+        const answerText = format==="ja-en"?q.answer:q.answer;
+        div.innerHTML=`<strong>${q.number}. ${questionText}</strong>: <span class="answer" style="display:none;">${answerText}</span>`;
+        memorizeBox.appendChild(div);
+
+        div.addEventListener("click", ()=>{
+            const ans = div.querySelector(".answer");
+            ans.style.display = ans.style.display==="none"?"inline":"none";
+        });
+    });
+}
+
+// 暗記モード：一気に表示/隠す
+showAllBtn.addEventListener("click", ()=>memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="inline"));
+hideAllBtn.addEventListener("click", ()=>memorizeBox.querySelectorAll(".answer").forEach(el=>el.style.display="none"));
