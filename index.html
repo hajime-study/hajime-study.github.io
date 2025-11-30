@@ -1,82 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ランダムテスト作成ツール</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
-    h1 { font-size: 24px; }
-    .question-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
-    .answer { margin-top: 10px; font-weight: bold; color: green; }
-    button { margin-top: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ターゲット1900</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>CSVからテストを作成</h1>
+<div class="container">
+    <h1>ターゲット1900</h1>
+    <p>指定範囲の中からランダムに問題を出題するジョ！</p>
 
-  <label>CSVファイルを選択：</label>
-  <input type="file" id="csvFile" accept=".csv"><br><br>
+    <label>出題方向：</label>
+    <select id="mode">
+        <option value="en-ja">英語 → 日本語</option>
+        <option value="ja-en">日本語 → 英語</option>
+    </select>
 
-  <label>出題する問題数：</label>
-  <input type="number" id="questionCount" min="1"><br><br>
+    <label>出題する問題数：</label>
+    <input type="number" id="count" value="1">
 
-  <button onclick="generateTest()">作成</button>
+    <label>開始番号：</label>
+    <input type="number" id="start" value="1">
 
-  <div id="questionsContainer"></div>
+    <label>終了番号：</label>
+    <input type="number" id="end" value="1900">
 
-  <script>
-    let allQuestions = [];
+    <button id="generateBtn">作成</button>
 
-    // ファイルがアップロードされたら読み込む
-    document.getElementById('csvFile').addEventListener('change', function (event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    <div id="questionArea"></div>
 
-      Papa.parse(file, {
-        header: false,
-        skipEmptyLines: true,
-        complete: function (results) {
-          allQuestions = results.data.map(row => ({
-            number: row[0],
-            question: row[1],
-            answer: row[2]
-          }));
-          alert("CSV読み込み完了。問題数：" + allQuestions.length);
-        }
-      });
-    });
+    <hr>
 
-    function generateTest() {
-      const count = parseInt(document.getElementById('questionCount').value);
-      if (!allQuestions.length) {
-        alert("CSVが読み込まれていません！");
-        return;
-      }
+    <h2>苦手ボックス</h2>
+    <p style="font-size: 0.9rem; margin-top: -8px; color: #777;">自分で追加した単語がここに溜まるよ！</p>
+    <div id="weakContainer" style="margin-bottom: 40px;"></div>
+</div>
 
-      if (isNaN(count) || count < 1) {
-        alert("正しい問題数を入力してください。");
-        return;
-      }
-
-      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, count);
-      const container = document.getElementById('questionsContainer');
-      container.innerHTML = '';
-
-      selected.forEach((q, idx) => {
-        const box = document.createElement('div');
-        box.className = 'question-box';
-        box.innerHTML = `
-          <div><strong>Q${q.number}.</strong> ${q.question}</div>
-          <button onclick="this.nextElementSibling.style.display='block'; this.remove()">答えをチェック</button>
-          <div class="answer" style="display: none;">答え：${q.answer}</div>
-        `;
-        container.appendChild(box);
-      });
-    }
-  </script>
-
+<script src="app.js"></script>
 </body>
 </html>
