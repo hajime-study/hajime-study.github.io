@@ -1,7 +1,7 @@
-// ★ 全問題データ
+// 全問題
 const allQuestions = [
   { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
-  { number: 2, question: "increase", answer: "増加する；を増やす"},
+{ number: 2, question: "increase", answer: "増加する；を増やす"},
 { number: 3, question: "improve", answer: "を向上させる；よくなる"},
 { number: 4, question: "mean", answer: "を意味する；(…する)つもりである(to do)"},
 { number: 5, question: "own", answer: "を所有している；(事実・罪など)を認める"},
@@ -1902,34 +1902,34 @@ const allQuestions = [
 { number: 1900, question: "zealous", answer: "熱心な；熱狂的な"}
 ];
 
-// ★ 苦手ボックス保存
-function loadWeakBox() {
+// ----- 苦手ボックス -----
+function loadWeak() {
   return JSON.parse(localStorage.getItem("weakBox") || "[]");
 }
 
-function saveWeakBox(data) {
+function saveWeak(data) {
   localStorage.setItem("weakBox", JSON.stringify(data));
 }
 
-function addToWeakBox(q) {
-  const box = loadWeakBox();
+function addWeak(q) {
+  const box = loadWeak();
   if (!box.some(item => item.number === q.number)) {
     box.push(q);
   }
-  saveWeakBox(box);
-  displayWeakBox();
+  saveWeak(box);
+  displayWeak();
 }
 
-function removeFromWeakBox(num) {
-  const box = loadWeakBox().filter(q => q.number !== num);
-  saveWeakBox(box);
-  displayWeakBox();
+function removeWeak(num) {
+  const box = loadWeak().filter(q => q.number !== num);
+  saveWeak(box);
+  displayWeak();
 }
 
-// ★ 苦手ボックス表示
-function displayWeakBox() {
-  const box = loadWeakBox();
+// ----- 苦手ボックス表示 -----
+function displayWeak() {
   const container = document.getElementById("weakContainer");
+  const box = loadWeak();
   container.innerHTML = "";
 
   if (box.length === 0) {
@@ -1940,31 +1940,33 @@ function displayWeakBox() {
   box.forEach(q => {
     const div = document.createElement("div");
     div.className = "question-box";
-    div.innerHTML = `<strong>${q.number}.</strong> ${q.question} / ${q.answer}`;
+    div.innerHTML = `
+      <strong>${q.number}.</strong> ${q.question} / ${q.answer}
+      <button style="margin-left:10px;" onclick="removeWeak(${q.number})">削除</button>
+    `;
     container.appendChild(div);
   });
 }
 
-// ★ 出題モード切り替え
+// ----- モード切り替え -----
 document.getElementById("mode").addEventListener("change", function () {
-  const mode = this.value;
-  document.getElementById("normalForm").style.display = (mode === "normal") ? "block" : "none";
-  document.getElementById("weakForm").style.display = (mode === "weak") ? "block" : "none";
+  document.getElementById("normalForm").style.display =
+    this.value === "normal" ? "block" : "none";
+  
+  document.getElementById("weakForm").style.display =
+    this.value === "weak" ? "block" : "none";
 });
 
-// ★ 出題処理
+// ----- 出題 -----
 function generateTest() {
   const mode = document.getElementById("mode").value;
-  
-  if (mode === "normal") {
-    generateNormalTest();
-  } else {
-    generateWeakTest();
-  }
+
+  if (mode === "normal") generateNormal();
+  else generateWeakTest();
 }
 
-// ★ 通常出題
-function generateNormalTest() {
+// 通常
+function generateNormal() {
   const count = parseInt(document.getElementById("questionCount").value);
   const start = parseInt(document.getElementById("startNumber").value);
   const end = parseInt(document.getElementById("endNumber").value);
@@ -1986,15 +1988,16 @@ function generateNormalTest() {
   renderQuestions(selected, direction);
 }
 
-// ★ 苦手ボックス出題
+// 苦手ボックスから出題
 function generateWeakTest() {
-  const box = loadWeakBox();
+  const box = loadWeak();
   const count = parseInt(document.getElementById("weakCount").value);
 
   if (box.length === 0) {
     alert("苦手ボックスが空です！");
     return;
   }
+
   if (count > box.length) {
     alert(`苦手ボックスには${box.length}問しかありません。`);
     return;
@@ -2002,18 +2005,16 @@ function generateWeakTest() {
 
   const selected = box.sort(() => 0.5 - Math.random()).slice(0, count);
 
-  // ランダムで方向決定（英→日 or 日→英）
-  const direction = "random";
-
-  renderQuestions(selected, direction, true);
+  // 強制ランダム方向
+  renderQuestions(selected, "random");
 }
 
-// ★ 出題描画
-function renderQuestions(selected, direction, fromWeak = false) {
+// ----- 出題描画 -----
+function renderQuestions(list, direction) {
   const container = document.getElementById("questionsContainer");
   container.innerHTML = "";
 
-  selected.forEach(q => {
+  list.forEach(q => {
     let dir = direction;
     if (dir === "random") dir = Math.random() < 0.5 ? "normal" : "reverse";
 
@@ -2027,35 +2028,35 @@ function renderQuestions(selected, direction, fromWeak = false) {
       <div class="question"><strong>${q.number}.</strong> ${showQ}</div>
       <button class="reveal-button">答えを見る</button>
       <div class="answer" style="display:none;">${showA}</div>
+
       <div class="result-buttons" style="display:none;">
-        <button class="correct">正解</button>
-        <button class="wrong">不正解</button>
+        <button class="add-weak">苦手ボックスに入れる</button>
+        <button class="skip">入れない</button>
       </div>
     `;
 
-    const revealBtn = box.querySelector(".reveal-button");
-    const answerDiv = box.querySelector(".answer");
-    const resultBtns = box.querySelector(".result-buttons");
+    const reveal = box.querySelector(".reveal-button");
+    const answer = box.querySelector(".answer");
+    const btns = box.querySelector(".result-buttons");
 
-    revealBtn.onclick = () => {
-      answerDiv.style.display = "block";
-      revealBtn.style.display = "none";
-      resultBtns.style.display = "block";
+    reveal.onclick = () => {
+      answer.style.display = "block";
+      reveal.style.display = "none";
+      btns.style.display = "block";
     };
 
-    resultBtns.querySelector(".correct").onclick = () => {
-      if (fromWeak) removeFromWeakBox(q.number);
-      box.style.background = "#e0ffe0";
-    };
-
-    resultBtns.querySelector(".wrong").onclick = () => {
-      addToWeakBox(q);
+    box.querySelector(".add-weak").onclick = () => {
+      addWeak(q);
       box.style.background = "#ffe0e0";
+    };
+
+    box.querySelector(".skip").onclick = () => {
+      box.style.background = "#e0ffe0";
     };
 
     container.appendChild(box);
   });
 }
 
-// ページ読み込みで苦手ボックス表示
-displayWeakBox();
+// ロード時に苦手ボックス表示
+displayWeak();
