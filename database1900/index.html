@@ -1,67 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>はじめ1900</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ターゲット1900</title>
 
-  <link rel="stylesheet" href="/database1900/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+
+<div class="container">
     <h1>ターゲット1900</h1>
+    <p>指定範囲の中からランダムに問題を出題するジョ！</p>
 
-    <div class="form-group">
-      <label>出題モード：</label>
-      <select id="mode">
-        <option value="normal">通常出題</option>
-        <option value="weak">苦手ボックスから出題</option>
-      </select>
-    </div>
+    <label>出題方向：</label>
+    <select id="mode">
+        <option value="en-ja">英語 → 日本語</option>
+        <option value="ja-en">日本語 → 英語</option>
+    </select>
 
-    <!-- 通常出題 -->
-    <div id="normalForm">
-      <div class="form-group">
-        <label>出題方向：</label>
-        <select id="direction">
-          <option value="normal">英語 → 日本語</option>
-          <option value="reverse">日本語 → 英語</option>
-          <option value="random">ランダム</option>
-        </select>
-      </div>
+    <label>出題する問題数：</label>
+    <input type="number" id="count" value="1">
 
-      <div class="form-group">
-        <label>問題数：</label>
-        <input type="number" id="questionCount" min="1">
-      </div>
+    <label>開始番号：</label>
+    <input type="number" id="start" value="1">
 
-      <div class="form-group">
-        <label>開始番号：</label>
-        <input type="number" id="startNumber" min="1">
-      </div>
+    <label>終了番号：</label>
+    <input type="number" id="end" value="1900">
 
-      <div class="form-group">
-        <label>終了番号：</label>
-        <input type="number" id="endNumber" min="1">
-      </div>
-    </div>
+    <button id="generateBtn">作成</button>
 
-    <!-- 苦手ボックス出題 -->
-    <div id="weakForm" style="display:none;">
-      <div class="form-group">
-        <label>苦手ボックスから出題する問題数：</label>
-        <input type="number" id="weakCount" min="1">
-      </div>
-    </div>
+    <div id="questionArea"></div>
 
-    <button class="generate-button" onclick="generateTest()">作成</button>
-
-    <h2>出題</h2>
-    <div id="questionsContainer"></div>
+    <hr>
 
     <h2>苦手ボックス</h2>
-    <div id="weakContainer"></div>
-  </div>
+    <p style="font-size: 0.9rem; margin-top: -8px; color: #777;">自分で追加した単語がここに溜まるよ！</p>
+    <div id="weakContainer" style="margin-bottom: 40px;"></div>
+</div>
 
-  <script src="/database1900/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
