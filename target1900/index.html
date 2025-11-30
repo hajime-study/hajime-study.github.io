@@ -26,9 +26,11 @@
 
         <div id="subSettings"></div>
 
-        <label>開始番号: <input type="number" id="startNumber" value="1" min="1"></label>
-        <label>終了番号: <input type="number" id="endNumber" value="10" min="1"></label>
-        <label>出題数: <input type="number" id="numQuestions" value="10" min="1"></label>
+        <div id="rangeSection">
+            <label>開始番号: <input type="number" id="startNumber" value="1" min="1"></label>
+            <label>終了番号: <input type="number" id="endNumber" value="10" min="1"></label>
+            <label id="numQuestionsLabel">出題数: <input type="number" id="numQuestions" value="10" min="1"></label>
+        </div>
 
         <label><input type="checkbox" id="weakOnly"> 苦手ボックスのみ出題</label>
 
