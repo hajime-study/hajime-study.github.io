@@ -52,16 +52,10 @@ mainMode.addEventListener("change", ()=>{
             subSettings.appendChild(nextDiv);
 
             // 昇順/降順なら出題数非表示
-            document.getElementById("orderSelect").addEventListener("change", (e)=>{
-                if(e.target.value==="random"){
-                    numQuestionsLabel.style.display="block";
-                } else {
-                    numQuestionsLabel.style.display="none";
-                }
-            });
-            // 初期表示
-            const orderVal = document.getElementById("orderSelect").value;
-            numQuestionsLabel.style.display = orderVal==="random"?"block":"none";
+            const orderSelect = document.getElementById("orderSelect");
+            const toggleNumInput = ()=>{ numQuestionsLabel.style.display = (orderSelect.value==="random")?"block":"none"; };
+            orderSelect.addEventListener("change", toggleNumInput);
+            toggleNumInput();
         } else {
             nextDiv.innerHTML = `<label>回答方式:
                 <select id="answerTypeSelect">
@@ -96,27 +90,29 @@ startBtn.addEventListener("click", ()=>{
 
     if(quizWords.length===0) return alert("範囲内に単語がありません。");
 
+    // 日本語→英語の場合に正しく問題・答えを反映
+    const isJaEn = format==="ja-en";
+
     if(mode==="memorize"){
         if(order==="asc") quizWords = quizWords.slice().sort((a,b)=>a.number-b.number);
         else if(order==="desc") quizWords = quizWords.slice().sort((a,b)=>b.number-a.number);
         else quizWords = shuffleArray(quizWords.slice());
 
-        // ランダム以外は全出題
         if(order!=="random") num = quizWords.length;
         quizWords = quizWords.slice(0,num);
-        startMemorizeMode(format, weakBox);
+        startMemorizeMode(isJaEn, weakBox);
     } else {
         quizWords = shuffleArray(quizWords.slice());
         if(num>quizWords.length) num=quizWords.length;
         quizWords = quizWords.slice(0,num);
-        startNormalMode(format, answerType, weakBox);
+        startNormalMode(isJaEn, answerType, weakBox);
     }
 });
 
 function shuffleArray(arr){return arr.sort(()=>Math.random()-0.5);}
 
 // 通常モード
-function startNormalMode(format, answerType, weakBox){
+function startNormalMode(isJaEn, answerType, weakBox){
     document.getElementById("quiz").classList.remove("hidden");
     document.getElementById("memorizeSection").classList.add("hidden");
     quizContainer.innerHTML="";
@@ -124,13 +120,14 @@ function startNormalMode(format, answerType, weakBox){
     quizWords.forEach((q,i)=>{
         const div = document.createElement("div");
         div.classList.add("questionItem");
-        const questionText = format==="ja-en"?q.question:q.question;
-        const answerText = format==="ja-en"?q.answer:q.answer;
+
+        const questionText = isJaEn?q.answer:q.question;
+        const answerText = isJaEn?q.question:q.answer;
 
         let html = `<strong>${q.number}. ${questionText}</strong><br>`;
 
         if(answerType==="choice"){
-            let options = generateChoices(q, format);
+            let options = generateChoices(q, isJaEn);
             options = shuffleArray(options);
             options.forEach(opt=>html+=`<button class="choiceBtn">${opt}</button> `);
             html+=`<div class="result"></div>`;
@@ -161,7 +158,7 @@ function startNormalMode(format, answerType, weakBox){
         btn.addEventListener("click", e=>{
             const parent = e.target.parentElement;
             const idx = Array.from(quizContainer.children).indexOf(parent);
-            const correct = format==="ja-en"?quizWords[idx].answer:quizWords[idx].answer;
+            const correct = isJaEn?quizWords[idx].question:quizWords[idx].answer;
             const ansDiv = parent.querySelector(".result");
             if(e.target.innerText===correct) ansDiv.innerHTML=`<span style="color:green;">正解！</span>`;
             else ansDiv.innerHTML=`<span style="color:red;">不正解！あなた: ${e.target.innerText} 答え: ${correct}</span>`;
@@ -173,7 +170,7 @@ function startNormalMode(format, answerType, weakBox){
         btn.addEventListener("click", e=>{
             const parent = e.target.parentElement;
             const idx = Array.from(quizContainer.children).indexOf(parent);
-            const correct = format==="ja-en"?quizWords[idx].answer:quizWords[idx].answer;
+            const correct = isJaEn?quizWords[idx].question:quizWords[idx].answer;
             const input = parent.querySelector(".userInput").value.trim();
             const ansDiv = parent.querySelector(".result");
             if(input===correct) ansDiv.innerHTML=`<span style="color:green;">正解！</span>`;
@@ -183,16 +180,16 @@ function startNormalMode(format, answerType, weakBox){
 }
 
 // 選択肢生成
-function generateChoices(q, format){
-    let pool = words.map(w=>format==="ja-en"?w.answer:w.answer);
-    pool = pool.filter(w=>w!==((format==="ja-en")?q.answer:q.answer));
+function generateChoices(q, isJaEn){
+    let pool = words.map(w=>isJaEn?w.question:w.answer);
+    pool = pool.filter(w=>w!==((isJaEn)?q.question:q.answer));
     pool = shuffleArray(pool).slice(0,3);
-    pool.push((format==="ja-en")?q.answer:q.answer);
+    pool.push((isJaEn)?q.question:q.answer);
     return pool;
 }
 
 // 暗記モード
-function startMemorizeMode(format, weakBox){
+function startMemorizeMode(isJaEn, weakBox){
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("memorizeSection").classList.remove("hidden");
     memorizeBox.innerHTML="";
@@ -200,8 +197,10 @@ function startMemorizeMode(format, weakBox){
     quizWords.forEach(q=>{
         const div = document.createElement("div");
         div.classList.add("questionItem");
-        const questionText = format==="ja-en"?q.question:q.question;
-        const answerText = format==="ja-en"?q.answer:q.answer;
+
+        const questionText = isJaEn?q.answer:q.question;
+        const answerText = isJaEn?q.question:q.answer;
+
         div.innerHTML=`<strong>${q.number}. ${questionText}</strong>: <span class="answer" style="display:none;">${answerText}</span>`;
         memorizeBox.appendChild(div);
 
@@ -210,7 +209,7 @@ function startMemorizeMode(format, weakBox){
             ans.style.display = ans.style.display==="none"?"inline":"none";
         });
 
-        // 苦手ボックス
+        // 苦手ボタン
         const btn = document.createElement("button");
         btn.innerText = weakBox.has(q.number)?"苦手解除":"苦手にする";
         btn.classList.add("weakBtn");
