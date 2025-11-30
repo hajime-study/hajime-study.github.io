@@ -4,13 +4,8 @@
   <meta charset="UTF-8">
   <title>はじめ1900</title>
 
-  <!-- ファビコン -->
   <link rel="icon" href="/database1900/database1900.png" type="image/png">
-
-  <!-- アップル用ホーム画面アイコン -->
   <link rel="apple-touch-icon" href="/database1900/database1900.png" sizes="180x180">
-
-  <!-- PWAマニフェスト -->
   <link rel="manifest" href="/database1900/manifest.json">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,11 +13,33 @@
   <meta name="theme-color" content="#ffffff">
 
   <link rel="stylesheet" href="/database1900/style.css">
+  
+  <style>
+    .question-box {
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    .btn-small {
+      margin-left: 5px;
+      padding: 4px 8px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>ターゲット1900</h1>
-    <p>指定範囲の中からランダムに問題を出題！</p>
+    <p>指定範囲 or 苦手ボックス からランダムに出題！</p>
+
+    <div class="form-group">
+      <label>出題元：</label>
+      <select id="mode">
+        <option value="normal">範囲から出題</option>
+        <option value="weak">苦手ボックスから出題</option>
+      </select>
+    </div>
 
     <div class="form-group">
       <label>出題方向：</label>
@@ -38,22 +55,29 @@
       <input type="number" id="questionCount" min="1">
     </div>
 
-    <div class="form-group">
-      <label>開始番号：</label>
-      <input type="number" id="startNumber" min="1">
-    </div>
+    <div id="rangeSettings">
+      <div class="form-group">
+        <label>開始番号：</label>
+        <input type="number" id="startNumber" min="1">
+      </div>
 
-    <div class="form-group">
-      <label>終了番号：</label>
-      <input type="number" id="endNumber" min="1">
+      <div class="form-group">
+        <label>終了番号：</label>
+        <input type="number" id="endNumber" min="1">
+      </div>
     </div>
 
     <button class="generate-button" onclick="generateTest()">作成</button>
 
+    <h2>問題</h2>
     <div id="questionsContainer"></div>
+
+    <h2>苦手ボックス（保存）</h2>
+    <p id="weakCount"></p>
   </div>
 
   <script>
+    // ===== 全問題 =====
     const allQuestions = [
       { number: 1, question: "create", answer: "を創り出す；を引き起こす"},
 { number: 2, question: "increase", answer: "増加する；を増やす"},
@@ -1957,33 +1981,65 @@
 { number: 1900, question: "zealous", answer: "熱心な；熱狂的な"}
     ];
 
+    // ===== 苦手ボックスの保存・読み込み =====
+    let weakBox = JSON.parse(localStorage.getItem("weakBox") || "[]");
+
+    function saveWeakBox() {
+      localStorage.setItem("weakBox", JSON.stringify(weakBox));
+      updateWeakCount();
+    }
+
+    function updateWeakCount() {
+      document.getElementById("weakCount").innerText =
+        `登録数：${weakBox.length} 件`;
+    }
+
+    updateWeakCount();
+
+
+    // ===== 出題処理 =====
     function generateTest() {
+      const mode = document.getElementById("mode").value;
       const count = parseInt(document.getElementById('questionCount').value);
-      const start = parseInt(document.getElementById('startNumber').value);
-      const end = parseInt(document.getElementById('endNumber').value);
       const direction = document.getElementById('direction').value;
 
       if (isNaN(count) || count < 1) {
         alert("正しい問題数を入力してください。");
         return;
       }
-      if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
-        alert("正しい開始・終了番号を入力してください。");
+
+      let targetList = [];
+
+      // --- 通常出題 ---
+      if (mode === "normal") {
+        const start = parseInt(document.getElementById('startNumber').value);
+        const end = parseInt(document.getElementById('endNumber').value);
+
+        if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
+          alert("正しい開始・終了番号を入力してください。");
+          return;
+        }
+
+        targetList = allQuestions.filter(q => q.number >= start && q.number <= end);
+      }
+
+      // --- 苦手ボックスから出題 ---
+      if (mode === "weak") {
+        if (weakBox.length === 0) {
+          alert("苦手ボックスに問題がありません！");
+          return;
+        }
+        targetList = [...weakBox];
+      }
+
+      if (count > targetList.length) {
+        alert(`指定元には${targetList.length}問しかありません。`);
         return;
       }
 
-      const filtered = allQuestions.filter(q => q.number >= start && q.number <= end);
-      if (filtered.length === 0) {
-        alert("指定範囲に問題がありません！");
-        return;
-      }
-      if (count > filtered.length) {
-        alert(`指定範囲には${filtered.length}問しかありません。`);
-        return;
-      }
+      // ランダム選択
+      const selected = [...targetList].sort(() => 0.5 - Math.random()).slice(0, count);
 
-      const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, count);
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
 
@@ -2003,15 +2059,39 @@
           showAnswer = q.question;
         }
 
+        // 問題ボックス
         const box = document.createElement('div');
         box.className = 'question-box';
+
         box.innerHTML = `
           <div class="question"><strong>Q${q.number}.</strong> ${showQuestion}</div>
           <button class="reveal-button" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">答えをチェック</button>
-          <div class="answer" style="display: none;">${showAnswer}</div>
+          
+          <div class="answer" style="display: none;">
+            ${showAnswer}
+            <br><br>
+            <button class="btn-small" onclick="markCorrect(${q.number})">正解</button>
+            <button class="btn-small" onclick="markWrong(${q.number})">不正解 → 苦手に追加</button>
+          </div>
         `;
+
         container.appendChild(box);
       });
+    }
+
+    // ===== 正解・不正解処理 =====
+    function markCorrect(num) {
+      // 何もしない
+      alert("OK!");
+    }
+
+    function markWrong(num) {
+      const target = allQuestions.find(q => q.number === num);
+      if (!weakBox.some(q => q.number === num)) {
+        weakBox.push(target);
+        saveWeakBox();
+      }
+      alert("苦手ボックスに追加しました！");
     }
 
     if ('serviceWorker' in navigator) {
