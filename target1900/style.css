@@ -24,7 +24,6 @@ header {
     overflow: hidden;
 }
 
-/* ヘッダー「はじめ1900」文字 */
 header h1 {
     font-size: 3rem;
     font-weight: 900;
@@ -158,4 +157,23 @@ button:hover {
     color: white;
     font-weight: 500;
     margin-top: 0.3rem;
+}
+
+/* 自由入力欄装飾 */
+.userInput {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(145deg, #f0f0f0, #dcdcdc);
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.2);
+    font-size: 1rem;
+    width: 70%;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.userInput:focus {
+    outline: none;
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.3), 0 0 8px rgba(102,126,234,0.5);
+    background: linear-gradient(145deg, #ffffff, #e0e0e0);
 }
