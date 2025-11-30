@@ -4,30 +4,21 @@
   <meta charset="UTF-8">
   <title>はじめ1900</title>
 
-  <link rel="icon" href="/database1900/database1900.png" type="image/png">
-  <link rel="apple-touch-icon" href="/database1900/database1900.png" sizes="180x180">
-  <link rel="manifest" href="/database1900/manifest.json">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#ffffff">
-
   <link rel="stylesheet" href="/database1900/style.css">
 </head>
 <body>
   <div class="container">
     <h1>ターゲット1900</h1>
-    <p>ランダム出題 & 苦手ボックス機能つき！</p>
 
-    <!-- 出題モード -->
     <div class="form-group">
       <label>出題モード：</label>
       <select id="mode">
-        <option value="normal">通常の出題</option>
+        <option value="normal">通常出題</option>
         <option value="weak">苦手ボックスから出題</option>
       </select>
     </div>
 
-    <!-- 通常出題用フォーム -->
+    <!-- 通常出題 -->
     <div id="normalForm">
       <div class="form-group">
         <label>出題方向：</label>
@@ -39,7 +30,7 @@
       </div>
 
       <div class="form-group">
-        <label>出題する問題数：</label>
+        <label>問題数：</label>
         <input type="number" id="questionCount" min="1">
       </div>
 
@@ -54,7 +45,7 @@
       </div>
     </div>
 
-    <!-- 苦手ボックス出題フォーム -->
+    <!-- 苦手ボックス出題 -->
     <div id="weakForm" style="display:none;">
       <div class="form-group">
         <label>苦手ボックスから出題する問題数：</label>
