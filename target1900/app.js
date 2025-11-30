@@ -114,12 +114,13 @@ function startNormalMode(format, answerType, weakBox){
         const div = document.createElement("div");
         div.classList.add("questionItem");
 
+        // 出題言語と答えの設定
         let isJaEn;
         if(format==="random") isJaEn = Math.random()<0.5;
         else isJaEn = format==="ja-en";
 
-        const questionText = isJaEn?q.answer:q.question;
-        const answerText = isJaEn?q.question:q.answer;
+        const questionText = isJaEn?q.answer:q.question;  // 問題
+        const answerText = isJaEn?q.question:q.answer;    // 正解
 
         let html = `<strong>${q.number}. ${questionText}</strong><br>`;
 
@@ -174,7 +175,7 @@ function startNormalMode(format, answerType, weakBox){
     });
 }
 
-// 暗記モードはそのまま
+// 暗記モード
 function startMemorizeMode(format, weakBox){
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("memorizeSection").classList.remove("hidden");
@@ -222,8 +223,10 @@ hideAllBtn.addEventListener("click", ()=>memorizeBox.querySelectorAll(".answer")
 
 // 選択肢生成関数
 function generateChoices(correctWord, isJaEn){
-    let pool = words.map(w=>isJaEn?w.answer:w.question).filter(x=>x!== (isJaEn?correctWord.answer:correctWord.question));
+    // 問題が英語なら答えは日本語から、問題が日本語なら答えは英語から
+    let pool = isJaEn? words.map(w=>w.question) : words.map(w=>w.answer);
+    pool = pool.filter(x=>x!== (isJaEn?correctWord.question:correctWord.answer));
     pool = shuffleArray(pool).slice(0,3);
-    pool.push(isJaEn?correctWord.answer:correctWord.question);
+    pool.push(isJaEn?correctWord.question:correctWord.answer);
     return pool;
 }
