@@ -1,63 +1,40 @@
 body {
-  font-family: "Hiragino Kaku Gothic Pro","メイリオ",sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #fdfdfd;
-  color: #333;
+    font-family: "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f0f0f0;
 }
 
 header {
-  background: #4a90e2;
-  color: white;
-  text-align: center;
-  padding: 1em 0;
-}
-
-h1, h2 {
-  margin: 0.5em 0;
+    background: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
 }
 
 main {
-  padding: 1em;
-}
-
-section {
-  margin-bottom: 2em;
-  border: 1px solid #ccc;
-  padding: 1em;
-  border-radius: 8px;
-  background: #fff;
+    padding: 1rem;
 }
 
 label {
-  display: block;
-  margin: 0.5em 0;
-}
-
-input, select, button {
-  margin-left: 0.5em;
+    display: block;
+    margin: 0.5rem 0;
 }
 
 button {
-  margin-top: 1em;
-  padding: 0.5em 1em;
-  cursor: pointer;
-  border-radius: 4px;
-  border: none;
-  background-color: #4a90e2;
-  color: white;
-  font-weight: bold;
+    margin: 0.5rem 0.2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
 }
 
-button:hover {
-  background-color: #357ab8;
+.hidden {
+    display: none;
 }
 
-#questionArea {
-  margin: 1em 0;
-  font-size: 1.2em;
-}
-
-ul {
-  padding-left: 1em;
+#questionBox, #answerBox, #memorizeBox {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ccc;
 }
