@@ -2,8 +2,8 @@ body {
     font-family: 'Helvetica Neue', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff);
-    color: #333;
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    color: #000;
 }
 
 header {
@@ -73,24 +73,24 @@ button:hover {
     display: none;
 }
 
-#questionBox, #answerBox, #memorizeBox {
+#quizContainer, #memorizeBox {
     margin: 1rem 0;
     padding: 1.2rem;
-    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    background: linear-gradient(145deg, #ffffff, #f7f7f7);
     border-radius: 16px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     font-size: 1.1rem;
 }
 
-.buttons {
-    margin-top: 1rem;
-}
-
-#memorizeBox .questionItem {
+.questionItem {
     margin-bottom: 1rem;
     padding: 0.8rem;
     background: linear-gradient(135deg, #c3ecf7, #667eea);
-    color: white;
+    color: black;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.memorizeButtons {
+    margin-top: 1rem;
 }
